@@ -160,11 +160,6 @@ function log(groupTitle, text) {
 }
 
 function sendMessage(chatId, text, groupTitle) {
-  var newText = '';
-  if (chatId == devGroupChatId) {
-    newText = groupTitle + ': ' + text;
-  } else {
-    newText = text;
-  }
-  bot.sendMessage(chatId, newText);
+  text = groupTitle + ': ' + text;
+  bot.sendMessage(chatId, text);
 }
