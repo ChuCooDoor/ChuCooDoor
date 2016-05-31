@@ -11,6 +11,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "node-telegram-bot-api": "^0.21.1",
+    "request-promise": "^3.0.0",
     "webduino-js": "^0.3.7"
   }
 }

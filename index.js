@@ -3,14 +3,18 @@
 // import modules
 var webduino = require('webduino-js');
 var TelegramBot = require('node-telegram-bot-api');
+var rp = require('request-promise');
 var config = require('./env.js');
 
 // init variables
 var devicesInfo = config.devicesInfo;
 var mqttBroker = config.mqttBroker;
+var hydraBaseUrl = config.hydraBaseUrl;
+var hydraId = config.hydraId;
 var telegram_token = config.telegram_token;
 var devGroupChatId = config.telegram_devGroupChatId;
 
+// init telegram bot with polling
 var bot = new TelegramBot(telegram_token, {polling: true});
 
 for (var index = 0; index < devicesInfo.length; index++) {
@@ -93,6 +97,7 @@ function ChuCooDoor(deviceInfo) {
       ////////////////
 
       function check() {
+        console.log('');
         var boardValue = board.getDigitalPin(deviceInfo.boardPin).value;
 
         log(deviceInfo.groupTitle, 'boardValue: ' + boardValue);
@@ -117,12 +122,12 @@ function ChuCooDoor(deviceInfo) {
           // change status of lock.
           status = boardValue;
           sendMessage(chatId, text, deviceInfo.groupTitle);
+          getSnapshot(deviceInfo);
           log(deviceInfo.groupTitle, text);
 
         } else {
           log(deviceInfo.groupTitle, '忽略');
         }
-        console.log('');
       }
     }
 
@@ -159,7 +164,98 @@ function log(groupTitle, text) {
   console.log(date + ' ' + time + ': ' + groupTitle + ' ' + text);
 }
 
-function sendMessage(chatId, text, groupTitle) {
+function sendMessage(chatId, text, groupTitle, options) {
   text = groupTitle + ': ' + text;
-  bot.sendMessage(chatId, text);
+  bot.sendMessage(chatId, text, options);
+}
+
+/*
+** login Hydra > get camera list > search camera > get snapshot link > get imgage > send snapshot
+*/
+function getSnapshot(deviceInfo) {
+  var hydraCamera;
+
+  loginHydra()
+    .then(function (res) {
+      getCameraList()
+        .then(function (res) {
+          // search camera whose id is equal to device's camera id.
+          for (var index = 0; index < res.P.length; index++) {
+            if (res.P[index].id == deviceInfo.hydraCameraId) {
+              hydraCamera = res.P[index];
+              break;
+            }
+          }
+          if (hydraCamera == undefined) {
+            // no camera is matched.
+            sendMessage(devGroupChatId, '找無攝影機', deviceInfo.groupTitle)
+            log(deviceInfo.groupTitle, '找無攝影機');
+          } else {
+            getSnapshotLink(hydraCamera.data.streamHigh)
+              .then(function (res) {
+                getImgage(res.P)
+                  .then(function (res) {
+                    bot.sendPhoto(devGroupChatId, res, {disable_notification: true});
+                    log(deviceInfo.groupTitle, '成功獲取截圖');
+                  })
+                  .catch(function (err) {
+                    sendMessage(devGroupChatId, '無法取得截圖\n`' + err + '`', deviceInfo.groupTitle, {parse_mode: 'Markdown'});
+                    log(deviceInfo.groupTitle, '無法取得截圖');
+                  });
+              })
+              .catch(function (err) {
+                sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, {parse_mode: 'Markdown'});
+                log(deviceInfo.groupTitle, '無法取得截圖網址');
+              });
+          }
+        })
+        .catch(function (err) {
+          sendMessage(devGroupChatId, '無法取得攝影機列表\n`' + err + '`', 'System', {parse_mode: 'Markdown'});
+          log(deviceInfo.groupTitle, '無法取得攝影機列表');
+        });
+    })
+    .catch(function (err) {
+      sendMessage(devGroupChatId, '無法登入 Hydra\n`' + err + '`', 'System', {parse_mode: 'Markdown'});
+      log(deviceInfo.groupTitle, '無法登入 Hydra');
+    });
+}
+
+function loginHydra() {
+  var options = {
+    uri: hydraBaseUrl + '/guest?login_id=' + hydraId,
+    json: true,
+    jar: true
+  };
+
+  return rp(options);
+}
+
+function getCameraList() {
+  var options = {
+    uri: hydraBaseUrl + '/readCamera',
+    json: true,
+    jar: true
+  };
+
+  return rp(options);
+}
+
+function getSnapshotLink(cameraStreamId) {
+  var options = {
+    uri: hydraBaseUrl + '/snapshot?streamID=' + cameraStreamId,
+    json: true,
+    jar: true
+  };
+
+  return rp(options);
+}
+
+function getImgage(url) {
+  var options = {
+    uri: url,
+    jar: true,
+    encoding: null
+  };
+
+  return rp(options);
 }
