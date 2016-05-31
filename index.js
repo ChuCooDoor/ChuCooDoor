@@ -121,8 +121,11 @@ function ChuCooDoor(deviceInfo) {
 
           // change status of lock.
           status = boardValue;
-          sendMessage(chatId, text, deviceInfo.groupTitle);
-          getSnapshot(deviceInfo);
+          sendMessage(chatId, text, deviceInfo.groupTitle)
+            .then(function (message) {
+              getSnapshot(deviceInfo, message.message_id);
+            });
+
           log(deviceInfo.groupTitle, text);
 
         } else {
@@ -166,13 +169,13 @@ function log(groupTitle, text) {
 
 function sendMessage(chatId, text, groupTitle, options) {
   text = groupTitle + ': ' + text;
-  bot.sendMessage(chatId, text, options);
+  return bot.sendMessage(chatId, text, options);
 }
 
 /*
 ** login Hydra > get camera list > search camera > get snapshot link > get imgage > send snapshot
 */
-function getSnapshot(deviceInfo) {
+function getSnapshot(deviceInfo, messageId) {
   var hydraCamera;
 
   loginHydra()
@@ -188,34 +191,34 @@ function getSnapshot(deviceInfo) {
           }
           if (hydraCamera == undefined) {
             // no camera is matched.
-            sendMessage(devGroupChatId, '找無攝影機', deviceInfo.groupTitle)
+            sendMessage(devGroupChatId, '找無攝影機', deviceInfo.groupTitle, {reply_to_message_id: messageId});
             log(deviceInfo.groupTitle, '找無攝影機');
           } else {
             getSnapshotLink(hydraCamera.data.streamHigh)
               .then(function (res) {
                 getImgage(res.P)
                   .then(function (res) {
-                    bot.sendPhoto(devGroupChatId, res, {disable_notification: true});
+                    bot.sendPhoto(devGroupChatId, res, {reply_to_message_id: messageId, disable_notification: true});
                     log(deviceInfo.groupTitle, '成功獲取截圖');
                   })
                   .catch(function (err) {
-                    sendMessage(devGroupChatId, '無法取得截圖\n`' + err + '`', deviceInfo.groupTitle, {parse_mode: 'Markdown'});
+                    sendMessage(devGroupChatId, '無法取得截圖\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
                     log(deviceInfo.groupTitle, '無法取得截圖');
                   });
               })
               .catch(function (err) {
-                sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, {parse_mode: 'Markdown'});
+                sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
                 log(deviceInfo.groupTitle, '無法取得截圖網址');
               });
           }
         })
         .catch(function (err) {
-          sendMessage(devGroupChatId, '無法取得攝影機列表\n`' + err + '`', 'System', {parse_mode: 'Markdown'});
+          sendMessage(devGroupChatId, '無法取得攝影機列表\n`' + err + '`', 'System', {reply_to_message_id: messageId, parse_mode: 'Markdown'});
           log(deviceInfo.groupTitle, '無法取得攝影機列表');
         });
     })
     .catch(function (err) {
-      sendMessage(devGroupChatId, '無法登入 Hydra\n`' + err + '`', 'System', {parse_mode: 'Markdown'});
+      sendMessage(devGroupChatId, '無法登入 Hydra\n`' + err + '`', 'System', {reply_to_message_id: messageId, parse_mode: 'Markdown'});
       log(deviceInfo.groupTitle, '無法登入 Hydra');
     });
 }
