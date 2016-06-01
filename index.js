@@ -196,14 +196,15 @@ function getSnapshot(deviceInfo, messageId) {
           } else {
             getSnapshotLink(hydraCamera.data.streamHigh)
               .then(function (res) {
+                var snapshotLink = res;
                 getImgage(res.P)
                   .then(function (res) {
                     bot.sendPhoto(devGroupChatId, res, {reply_to_message_id: messageId, disable_notification: true});
                     log(deviceInfo.groupTitle, '成功獲取截圖');
                   })
                   .catch(function (err) {
-                    sendMessage(devGroupChatId, '無法取得截圖\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
-                    log(deviceInfo.groupTitle, '無法取得截圖');
+                    sendMessage(devGroupChatId, '無法取得截圖\n' + snapshotLink + '\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
+                    log(deviceInfo.groupTitle, '無法取得截圖\n' + snapshotLink + '\n' + err);
                   });
               })
               .catch(function (err) {
