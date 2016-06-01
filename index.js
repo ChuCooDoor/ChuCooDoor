@@ -203,13 +203,13 @@ function getSnapshot(deviceInfo, messageId) {
                     log(deviceInfo.groupTitle, '成功獲取截圖');
                   })
                   .catch(function (err) {
-                    sendMessage(devGroupChatId, '無法取得截圖\n' + snapshotLink + '\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
-                    log(deviceInfo.groupTitle, '無法取得截圖\n' + snapshotLink + '\n' + err);
+                    sendMessage(devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
+                    log(deviceInfo.groupTitle, '無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + err);
                   });
               })
               .catch(function (err) {
                 sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
-                log(deviceInfo.groupTitle, '無法取得截圖網址');
+                log(deviceInfo.groupTitle, '無法取得截圖網址 ; ' + err);
               });
           }
         })
