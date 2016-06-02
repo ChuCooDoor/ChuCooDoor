@@ -40,10 +40,10 @@ function ChuCooDoor(deviceInfo) {
       log(deviceInfo.groupTitle, error)
       sendMessage(devGroupChatId, error, deviceInfo.groupTitle)
         .then(function (message) {
-          log(deviceInfo.groupTitle, message);
+          log(deviceInfo.groupTitle, 'Error 訊息寄送成功');
         })
         .catch(function (err) {
-          log(deviceInfo.groupTitle, error);
+          log(deviceInfo.groupTitle, 'Error 訊息寄送失敗：' + error);
         });
 
       console.log('');
@@ -154,10 +154,10 @@ function ChuCooDoor(deviceInfo) {
 
     sendMessage(devGroupChatId, 'ＧＧ', deviceInfo.groupTitle)
       .then(function (message) {
-        log(deviceInfo.groupTitle, JSON.stringify(message));
+        log(deviceInfo.groupTitle, '斷線訊息寄送成功');
       })
       .catch(function (err) {
-        log(deviceInfo.groupTitle, err);
+        log(deviceInfo.groupTitle, '斷線訊息寄送失敗：' + error);
       });
 
     log(deviceInfo.groupTitle, 'disconnect');
@@ -173,10 +173,10 @@ bot.onText(/\/getId/, function (msg) {
 
   sendMessage(devGroupChatId, chatId, fromUsername)
     .then(function (message) {
-      log(deviceInfo.groupTitle, JSON.stringify(message));
+      log('System：', '回應訊息寄送成功');
     })
     .catch(function (err) {
-      log(deviceInfo.groupTitle, err);
+      log('System：', '回應訊息寄送失敗：' + err);
     });
 });
 
@@ -211,12 +211,12 @@ function getSnapshot(chatId, deviceInfo, messageId) {
           }
           if (hydraCamera == undefined) {
             // no camera is matched.
-            sendMessage(devGroupChatId, '找無攝影機', deviceInfo.groupTitle, {reply_to_message_id: messageId})
+            sendMessage(devGroupChatId, '找無攝影機', deviceInfo.groupTitle)
               .then(function (message) {
-                log(deviceInfo.groupTitle, JSON.stringify(message));
+                log(deviceInfo.groupTitle, '找無攝影機訊息寄送成功');
               })
               .catch(function (err) {
-                log(deviceInfo.groupTitle, err);
+                log(deviceInfo.groupTitle, '錯誤訊息寄送失敗：' + err);
               });
             log(deviceInfo.groupTitle, '找無攝影機');
           } else {
@@ -225,44 +225,56 @@ function getSnapshot(chatId, deviceInfo, messageId) {
                 var snapshotLink = res;
                 getImgage(res.P)
                   .then(function (res) {
-                    bot.sendPhoto(devGroupChatId, res, {reply_to_message_id: messageId, disable_notification: true});
                     log(deviceInfo.groupTitle, '成功獲取截圖');
+                    bot.sendPhoto(chatId, res, {reply_to_message_id: messageId, disable_notification: true})
+                      .then(function (message) {
+                        log(deviceInfo.groupTitle, '截圖寄送成功');
+                      })
+                      .catch(function (err) {
+                        log(deviceInfo.groupTitle, '截圖寄送失敗' + err);
+                      });
                   })
                   .catch(function (err) {
-                    sendMessage(devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'});
                     log(deviceInfo.groupTitle, '無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + err);
+                    sendMessage(devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'})
+                      .then(function (message) {
+                        log(deviceInfo.groupTitle, '無法取得截圖訊息寄送成功');
+                      })
+                      .catch(function (err) {
+                        log(deviceInfo.groupTitle, '無法取得截圖訊息寄送失敗：' + err);
+                      });
                   });
               })
               .catch(function (err) {
                 sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'})
                   .then(function (message) {
-                    log(deviceInfo.groupTitle, JSON.stringify(message));
+                    log(deviceInfo.groupTitle, '無法取得截圖網址訊息寄送成功');
                   })
                   .catch(function (err) {
-                    log(deviceInfo.groupTitle, err);
+                    log(deviceInfo.groupTitle, '無法取得截圖網址訊息寄送失敗： ' + err);
                   });
-                log(deviceInfo.groupTitle, '無法取得截圖網址 ; ' + err);
+                log(deviceInfo.groupTitle, '無法取得截圖網址： ' + err);
               });
           }
         })
         .catch(function (err) {
-          sendMessage(devGroupChatId, '無法取得攝影機列表\n`' + err + '`', 'System', {reply_to_message_id: messageId, parse_mode: 'Markdown'})
+          sendMessage(devGroupChatId, '無法取得攝影機列表\n`' + err + '`', 'System', {parse_mode: 'Markdown'})
             .then(function (message) {
-              log(deviceInfo.groupTitle, JSON.stringify(message));
+              log(deviceInfo.groupTitle, '無法取得攝影機列表訊息寄送成功');
             })
             .catch(function (err) {
-              log(deviceInfo.groupTitle, err);
+              log(deviceInfo.groupTitle, '無法取得攝影機列表訊息寄送失敗： ' + err);
             });
           log(deviceInfo.groupTitle, '無法取得攝影機列表');
         });
     })
     .catch(function (err) {
-      sendMessage(devGroupChatId, '無法登入 Hydra\n`' + err + '`', 'System', {reply_to_message_id: messageId, parse_mode: 'Markdown'})
+      sendMessage(devGroupChatId, '無法登入 Hydra\n`' + err + '`', 'System', {parse_mode: 'Markdown'})
         .then(function (message) {
-          log(deviceInfo.groupTitle, JSON.stringify(message));
+          log(deviceInfo.groupTitle, '無法登入 Hydra 訊息寄送成功');
         })
         .catch(function (err) {
-          log(deviceInfo.groupTitle, err);
+          log(deviceInfo.groupTitle, '無法登入 Hydra 訊息寄送失敗：' + err);
         });
       log(deviceInfo.groupTitle, '無法登入 Hydra');
     });
