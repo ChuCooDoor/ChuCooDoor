@@ -132,11 +132,11 @@ function ChuCooDoor(deviceInfo) {
           status = boardValue;
           sendMessage(chatId, text, deviceInfo.groupTitle)
             .then(function (message) {
-              log(deviceInfo.groupTitle, JSON.stringify(message));
-              getSnapshot(deviceInfo, message.message_id);
+              log(deviceInfo.groupTitle, '開始偵測訊息寄送成功');
+              getSnapshot(chatId, deviceInfo, message.message_id);
             })
             .catch(function (err) {
-              log(deviceInfo.groupTitle, err);
+              log(deviceInfo.groupTitle, '開始偵測訊息寄送失敗：' + err);
             });
 
           log(deviceInfo.groupTitle, text);
@@ -200,7 +200,7 @@ function sendMessage(chatId, text, groupTitle, options) {
 /*
 ** login Hydra > get camera list > search camera > get snapshot link > get imgage > send snapshot
 */
-function getSnapshot(deviceInfo, messageId) {
+function getSnapshot(chatId, deviceInfo, messageId) {
   var hydraCamera;
 
   loginHydra()
