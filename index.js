@@ -85,14 +85,16 @@ function ChuCooDoor(deviceInfo) {
         // someone switch the lock.
         // sent to general group.
         var chatId = deviceInfo.telegram_groupChatId;
+        timer = setTimeout(check, 2000);
       } else {
         // check status at first.
         // sent to dev group only.
         var chatId = devGroupChatId;
+        timer = setTimeout(check, 4000);
       }
 
       // request for checking status
-      timer = setTimeout(check, 2000);
+      // timer = setTimeout(check, 2000);
 
       ////////////////
 
