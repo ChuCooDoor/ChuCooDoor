@@ -22,7 +22,6 @@ for (var index = 0; index < devicesInfo.length; index++) {
 }
 
 function ChuCooDoor(deviceInfo) {
-  // deviceInfo = deviceInfo;
   var board, lock, status, timer;
 
   // device info of webduino
@@ -70,8 +69,6 @@ function ChuCooDoor(deviceInfo) {
     log(deviceInfo.groupTitle, 'Ready');
     console.log('');
 
-    // sendMessage(devGroupChatId, '開始監控', deviceInfo.groupTitle);
-
     // check status when device is on ready.
     onCheck();
 
@@ -88,20 +85,18 @@ function ChuCooDoor(deviceInfo) {
       }
 
       // set telegram group id.
+      var chatId = '';
       if (status == 1 || status == 0) {
         // someone switch the lock.
         // sent to general group.
-        var chatId = deviceInfo.telegram_groupChatId;
+        chatId = deviceInfo.telegram_groupChatId;
         timer = setTimeout(check, 2000);
       } else {
         // check status at first.
         // sent to dev group only.
-        var chatId = devGroupChatId;
+        chatId = devGroupChatId;
         timer = setTimeout(check, 4000);
       }
-
-      // request for checking status
-      // timer = setTimeout(check, 2000);
 
       ////////////////
 
