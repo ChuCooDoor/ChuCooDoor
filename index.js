@@ -223,27 +223,30 @@ function getSnapshot(chatId, deviceInfo, messageId) {
             getSnapshotLink(hydraCamera.data.streamHigh)
               .then(function (res) {
                 var snapshotLink = res;
-                getImgage(res.P)
-                  .then(function (res) {
-                    log(deviceInfo.groupTitle, '成功獲取截圖');
-                    bot.sendPhoto(chatId, res, {reply_to_message_id: messageId, disable_notification: true})
-                      .then(function (message) {
-                        log(deviceInfo.groupTitle, '截圖寄送成功');
-                      })
-                      .catch(function (err) {
-                        log(deviceInfo.groupTitle, '截圖寄送失敗' + err);
-                      });
-                  })
-                  .catch(function (err) {
-                    log(deviceInfo.groupTitle, '無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + err);
-                    sendMessage(devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'})
-                      .then(function (message) {
-                        log(deviceInfo.groupTitle, '無法取得截圖訊息寄送成功');
-                      })
-                      .catch(function (err) {
-                        log(deviceInfo.groupTitle, '無法取得截圖訊息寄送失敗：' + err);
-                      });
-                  });
+                // 取得截圖網址後，延遲半秒鐘再拿圖。
+                setTimeout(function () {
+                  getImgage(res.P)
+                    .then(function (res) {
+                      log(deviceInfo.groupTitle, '成功獲取截圖');
+                      bot.sendPhoto(chatId, res, {reply_to_message_id: messageId, disable_notification: true})
+                        .then(function (message) {
+                          log(deviceInfo.groupTitle, '截圖寄送成功');
+                        })
+                        .catch(function (err) {
+                          log(deviceInfo.groupTitle, '截圖寄送失敗' + err);
+                        });
+                    })
+                    .catch(function (err) {
+                      log(deviceInfo.groupTitle, '無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + err);
+                      sendMessage(devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'})
+                        .then(function (message) {
+                          log(deviceInfo.groupTitle, '無法取得截圖訊息寄送成功');
+                        })
+                        .catch(function (err) {
+                          log(deviceInfo.groupTitle, '無法取得截圖訊息寄送失敗：' + err);
+                        });
+                    });
+                }, 500);
               })
               .catch(function (err) {
                 sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'})
