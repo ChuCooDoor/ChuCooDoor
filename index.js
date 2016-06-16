@@ -17,6 +17,14 @@ var devGroupChatId = config.telegram_devGroupChatId;
 // init telegram bot with polling
 var bot = new TelegramBot(telegram_token, {polling: true});
 
+bot.sendMessage(devGroupChatId, '系統啟動！')
+  .then(function (message) {
+    log('System', '系統啟動訊息寄送成功');
+  })
+  .catch(function (err) {
+    log('System', '系統啟動訊息寄送失敗：' + error);
+  });
+
 for (var index = 0; index < devicesInfo.length; index++) {
   new ChuCooDoor(devicesInfo[index]);
 }
