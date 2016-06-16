@@ -197,6 +197,7 @@ function sendMessage(chatId, text, groupTitle, options) {
 */
 function getSnapshot(chatId, deviceInfo, messageId) {
   var hydraCamera;
+  var message_options = {};
 
   loginHydra()
     .then(function (res) {
@@ -211,7 +212,10 @@ function getSnapshot(chatId, deviceInfo, messageId) {
           }
           if (hydraCamera == undefined) {
             // no camera is matched.
-            sendMessage(devGroupChatId, '找無攝影機', deviceInfo.groupTitle)
+            if (devGroupChatId == deviceInfo.telegram_groupChatId) {
+              message_options = {reply_to_message_id: messageId};
+            }
+            sendMessage(devGroupChatId, '找無攝影機', deviceInfo.groupTitle, message_options)
               .then(function (message) {
                 log(deviceInfo.groupTitle, '找無攝影機訊息寄送成功');
               })
@@ -228,7 +232,12 @@ function getSnapshot(chatId, deviceInfo, messageId) {
                   getImgage(res.P)
                     .then(function (res) {
                       log(deviceInfo.groupTitle, '成功獲取截圖');
-                      bot.sendPhoto(chatId, res, {reply_to_message_id: messageId, disable_notification: true})
+
+                      message_options = {
+                        disable_notification: true
+                      };
+
+                      bot.sendPhoto(chatId, res, {reply_to_message_id: messageId})
                         .then(function (message) {
                           log(deviceInfo.groupTitle, '截圖寄送成功');
                         })
@@ -238,7 +247,14 @@ function getSnapshot(chatId, deviceInfo, messageId) {
                     })
                     .catch(function (err) {
                       log(deviceInfo.groupTitle, '無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + err);
-                      sendMessage(devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'})
+                      message_options = {
+                        parse_mode: 'Markdown'
+                      };
+                      if (devGroupChatId == deviceInfo.telegram_groupChatId) {
+                        message_options.reply_to_message_id = messageId;
+                      }
+
+                      sendMessage(devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`', deviceInfo.groupTitle, message_options)
                         .then(function (message) {
                           log(deviceInfo.groupTitle, '無法取得截圖訊息寄送成功');
                         })
@@ -249,7 +265,14 @@ function getSnapshot(chatId, deviceInfo, messageId) {
                 }, 500);
               })
               .catch(function (err) {
-                sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, {reply_to_message_id: messageId, parse_mode: 'Markdown'})
+                message_options = {
+                  parse_mode: 'Markdown'
+                };
+                if (devGroupChatId == deviceInfo.telegram_groupChatId) {
+                  message_options.reply_to_message_id = messageId;
+                }
+
+                sendMessage(devGroupChatId, '無法取得截圖網址\n`' + err + '`', deviceInfo.groupTitle, message_options)
                   .then(function (message) {
                     log(deviceInfo.groupTitle, '無法取得截圖網址訊息寄送成功');
                   })
@@ -261,7 +284,14 @@ function getSnapshot(chatId, deviceInfo, messageId) {
           }
         })
         .catch(function (err) {
-          sendMessage(devGroupChatId, '無法取得攝影機列表\n`' + err + '`', 'System', {parse_mode: 'Markdown'})
+          message_options = {
+            parse_mode: 'Markdown'
+          };
+          if (devGroupChatId == deviceInfo.telegram_groupChatId) {
+            message_options.reply_to_message_id = messageId;
+          }
+
+          sendMessage(devGroupChatId, '無法取得攝影機列表\n`' + err + '`', 'System', message_options)
             .then(function (message) {
               log(deviceInfo.groupTitle, '無法取得攝影機列表訊息寄送成功');
             })
@@ -272,7 +302,13 @@ function getSnapshot(chatId, deviceInfo, messageId) {
         });
     })
     .catch(function (err) {
-      sendMessage(devGroupChatId, '無法登入 Hydra\n`' + err + '`', 'System', {parse_mode: 'Markdown'})
+      message_options = {
+        parse_mode: 'Markdown'
+      };
+      if (devGroupChatId == deviceInfo.telegram_groupChatId) {
+        message_options.reply_to_message_id = messageId;
+      }
+      sendMessage(devGroupChatId, '無法登入 Hydra\n`' + err + '`', 'System', message_options)
         .then(function (message) {
           log(deviceInfo.groupTitle, '無法登入 Hydra 訊息寄送成功');
         })
