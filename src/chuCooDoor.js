@@ -23,7 +23,7 @@ class ChuCooDoor {
     this.board.on(Webduino.BoardEvent.READY, () => {this.onReady();});
     this.board.on(Webduino.BoardEvent.BEFOREDISCONNECT, () => {this.onBeforeDisconnect();});
     this.board.on(Webduino.BoardEvent.DISCONNECT, () => {this.onDisconnect();});
-    this.board.on(Webduino.BoardEvent.ERROR, () => {this.onError();} );
+    this.board.on(Webduino.BoardEvent.ERROR, (error) => {this.onError();} );
 
   }
 
@@ -84,7 +84,7 @@ class ChuCooDoor {
         this.logger.log('Error 訊息寄送成功');
       })
       .catch(err => {
-        this.logger.log('Error 訊息寄送失敗：' + error);
+        this.logger.log('Error 訊息寄送失敗：' + err);
       });
   }
 
