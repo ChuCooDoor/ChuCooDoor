@@ -23,7 +23,7 @@ class ChuCooDoor {
     this.board.on(Webduino.BoardEvent.READY, () => {this.onReady();});
     this.board.on(Webduino.BoardEvent.BEFOREDISCONNECT, () => {this.onBeforeDisconnect();});
     this.board.on(Webduino.BoardEvent.DISCONNECT, () => {this.onDisconnect();});
-    this.board.on(Webduino.BoardEvent.ERROR, (error) => {this.onError();} );
+    this.board.on(Webduino.BoardEvent.ERROR, error => {this.onError();} );
 
   }
 
@@ -67,7 +67,7 @@ class ChuCooDoor {
       .then(message => {
         this.logger.log('斷線訊息寄送成功');
       })
-      .catch(err => {
+      .catch(error=> {
         this.logger.log('斷線訊息寄送失敗：' + error);
       });
 
@@ -83,8 +83,8 @@ class ChuCooDoor {
       .then(message => {
         this.logger.log('Error 訊息寄送成功');
       })
-      .catch(err => {
-        this.logger.log('Error 訊息寄送失敗：' + err);
+      .catch(error=> {
+        this.logger.log('Error 訊息寄送失敗：' + error);
       });
   }
 
@@ -124,8 +124,8 @@ class ChuCooDoor {
           this.logger.log('開始偵測訊息寄送成功');
           this.getSnapshot(chatId, message.message_id);
         })
-        .catch(err => {
-          this.logger.log('開始偵測訊息寄送失敗：' + err);
+        .catch(error=> {
+          this.logger.log('開始偵測訊息寄送失敗：' + error);
         });
 
       this.logger.log(text);
@@ -159,8 +159,8 @@ class ChuCooDoor {
                 .then(message => {
                   this.logger.log('找無攝影機訊息寄送成功');
                 })
-                .catch(err => {
-                  this.logger.log('錯誤訊息寄送失敗：' + err);
+                .catch(error=> {
+                  this.logger.log('錯誤訊息寄送失敗：' + error);
                 });
               this.logger.log('找無攝影機');
             } else {
@@ -181,12 +181,12 @@ class ChuCooDoor {
                           .then(message => {
                             this.logger.log('截圖寄送成功');;
                           })
-                          .catch(err => {
-                            this.logger.log('截圖寄送失敗' + err);
+                          .catch(error=> {
+                            this.logger.log('截圖寄送失敗' + error);
                           });
                       })
-                      .catch(err => {
-                        this.logger.log('無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + err);
+                      .catch(error=> {
+                        this.logger.log('無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + error);
                         let message_options = {
                           parse_mode: 'Markdown'
                         };
@@ -194,17 +194,17 @@ class ChuCooDoor {
                           message_options.reply_to_message_id = messageId;
                         }
 
-                        this.sendMessage(this.devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + err + '`',  message_options)
+                        this.sendMessage(this.devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + error+ '`',  message_options)
                           .then(message => {
                             this.logger.log('無法取得截圖訊息寄送成功');
                           })
-                          .catch(err => {
-                            this.logger.log('無法取得截圖訊息寄送失敗：' + err);
+                          .catch(error=> {
+                            this.logger.log('無法取得截圖訊息寄送失敗：' + error);
                           });
                       });
                   }, 500);
                 })
-                .catch(err => {
+                .catch(error=> {
                   let message_options = {
                     parse_mode: 'Markdown'
                   };
@@ -212,18 +212,18 @@ class ChuCooDoor {
                     message_options.reply_to_message_id = messageId;
                   }
 
-                  this.sendMessage(this.devGroupChatId, '無法取得截圖網址\n`' + err + '`', message_options)
+                  this.sendMessage(this.devGroupChatId, '無法取得截圖網址\n`' + error+ '`', message_options)
                     .then(message => {
                       this.logger.log('無法取得截圖網址訊息寄送成功');
                     })
-                    .catch(err => {
-                      this.logger.log('無法取得截圖網址訊息寄送失敗： ' + err);
+                    .catch(error=> {
+                      this.logger.log('無法取得截圖網址訊息寄送失敗： ' + error);
                     });
-                  this.logger.log('無法取得截圖網址： ' + err);
+                  this.logger.log('無法取得截圖網址： ' + error);
                 });
             }
           })
-          .catch(err => {
+          .catch(error=> {
             let message_options = {
               parse_mode: 'Markdown'
             };
@@ -231,29 +231,29 @@ class ChuCooDoor {
               message_options.reply_to_message_id = messageId;
             }
 
-            this.sendMessage(this.devGroupChatId, '無法取得攝影機列表\n`' + err + '`', message_options)
+            this.sendMessage(this.devGroupChatId, '無法取得攝影機列表\n`' + error+ '`', message_options)
               .then(message => {
                 this.logger.log('無法取得攝影機列表訊息寄送成功');
               })
-              .catch(err => {
-                this.logger.log('無法取得攝影機列表訊息寄送失敗： ' + err);
+              .catch(error=> {
+                this.logger.log('無法取得攝影機列表訊息寄送失敗： ' + error);
               });
             this.logger.log('無法取得攝影機列表');
           });
       })
-      .catch(err => {
+      .catch(error=> {
         let message_options = {
           parse_mode: 'Markdown'
         };
         if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
           message_options.reply_to_message_id = messageId;
         }
-        this.sendMessage(this.devGroupChatId, '無法登入 Hydra\n`' + err + '`', message_options)
+        this.sendMessage(this.devGroupChatId, '無法登入 Hydra\n`' + error+ '`', message_options)
           .then(message => {
             this.logger.log('無法登入 Hydra 訊息寄送成功');
           })
-          .catch(err => {
-            this.logger.log('無法登入 Hydra 訊息寄送失敗：' + err);
+          .catch(error=> {
+            this.logger.log('無法登入 Hydra 訊息寄送失敗：' + error);
           });
         this.logger.log('無法登入 Hydra');
       });
