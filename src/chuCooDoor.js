@@ -179,7 +179,7 @@ class ChuCooDoor {
                         };
                         this.bot.sendPhoto(chatId, res, message_options)
                           .then(message => {
-                            this.logger.log('截圖寄送成功');;
+                            this.logger.log('截圖寄送成功');
                           })
                           .catch(error=> {
                             this.logger.log('截圖寄送失敗' + error);
