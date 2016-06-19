@@ -122,7 +122,7 @@ class ChuCooDoor {
       this.sendMessage(chatId, text)
         .then(message => {
           this.logger.log('開始偵測訊息寄送成功');
-          this.getSnapshot(chatId, this.deviceInfo, message.message_id);
+          this.getSnapshot(chatId, message.message_id);
         })
         .catch(err => {
           this.logger.log('開始偵測訊息寄送失敗：' + err);
@@ -137,7 +137,6 @@ class ChuCooDoor {
 
   getSnapshot(chatId, messageId) {
     let hydraCamera;
-    let message_options = {};
 
     this.hydra.login()
       .then(res => {
@@ -151,6 +150,7 @@ class ChuCooDoor {
               }
             }
             if (!hydraCamera) {
+              let message_options = {};
               // no camera is matched.
               if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
                 message_options = {reply_to_message_id: messageId};
@@ -173,13 +173,13 @@ class ChuCooDoor {
                       .then(res => {
                         this.logger.log('成功獲取截圖');
 
-                        message_options = {
-                          disable_notification: true
+                        let message_options = {
+                          disable_notification: true,
+                          reply_to_message_id: messageId
                         };
-
-                        this.bot.sendPhoto(chatId, res, {reply_to_message_id: messageId})
+                        this.bot.sendPhoto(chatId, res, message_options)
                           .then(message => {
-                            this.logger.log('截圖寄送成功');
+                            this.logger.log('截圖寄送成功');;
                           })
                           .catch(err => {
                             this.logger.log('截圖寄送失敗' + err);
@@ -187,7 +187,7 @@ class ChuCooDoor {
                       })
                       .catch(err => {
                         this.logger.log('無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + err);
-                        message_options = {
+                        let message_options = {
                           parse_mode: 'Markdown'
                         };
                         if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
@@ -205,7 +205,7 @@ class ChuCooDoor {
                   }, 500);
                 })
                 .catch(err => {
-                  message_options = {
+                  let message_options = {
                     parse_mode: 'Markdown'
                   };
                   if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
@@ -224,7 +224,7 @@ class ChuCooDoor {
             }
           })
           .catch(err => {
-            message_options = {
+            let message_options = {
               parse_mode: 'Markdown'
             };
             if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
@@ -242,7 +242,7 @@ class ChuCooDoor {
           });
       })
       .catch(err => {
-        message_options = {
+        let message_options = {
           parse_mode: 'Markdown'
         };
         if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
