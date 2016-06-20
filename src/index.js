@@ -37,3 +37,21 @@ bot.onText(/\/getId/, function (msg) {
     }
   }
 });
+
+bot.onText(/\/status/, function (msg) {
+  const chatId = msg.chat.id;
+  const msgId = msg.message_id;
+
+  for (let index = 0; index < chuCooDoors.length; index++) {
+    if (chuCooDoors[index].getChatId() == chatId) {
+      chuCooDoors[index].sendDeviceStatus(chatId, msgId)
+        .then(function (message) {
+          chuCooDoors[index].log('回應狀態寄送成功');
+          chuCooDoors[index].getSnapshot(chatId, message.message_id);
+        })
+        .catch(function (error) {
+          chuCooDoors[index].log('回應狀態寄送失敗：' + error);
+        });
+    }
+  }
+});

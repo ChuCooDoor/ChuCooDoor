@@ -35,8 +35,21 @@ class ChuCooDoor {
     return this.deviceInfo.telegram_groupChatId;
   }
 
-  getDeviceStatus() {
+  sendDeviceStatus(chatId, msgId) {
+    const status = this.status;
+    let text = '';
 
+    if (status == -2) {
+      text = '初始化中';
+    } else if (status == -1) {
+      text = 'GG 中';
+    } else if (status == 1) {
+      text = '開門中';
+    } else if (status == 0) {
+      text = '關門中';
+    }
+
+    return this.sendMessage(chatId, text, {reply_to_message_id: msgId});
   }
 
   onReady() {
