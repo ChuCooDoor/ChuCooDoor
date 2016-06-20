@@ -21,3 +21,19 @@ bot.sendMessage(basicInfos.telegram_devGroupChatId, '系統啟動！')
   .catch(err => {
     logger.log(`系統啟動訊息寄送失敗： ${error}`);
   });
+
+bot.onText(/\/getId/, function (msg) {
+  const chatId = msg.chat.id;
+
+  for (let index = 0; index < chuCooDoors.length; index++) {
+    if (chuCooDoors[index].getChatId() == chatId) {
+      chuCooDoors[index].sendMessage(basicInfos.telegram_devGroupChatId, chatId)
+        .then(function (message) {
+          chuCooDoors[index].log('回應 ID 寄送成功');
+        })
+        .catch(function (error) {
+          chuCooDoors[index].log('回應 ID 寄送失敗：' + error);
+        });
+    }
+  }
+});

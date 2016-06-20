@@ -31,6 +31,10 @@ class ChuCooDoor {
     this.board = new Webduino.WebArduino(options);
   }
 
+  getChatId() {
+    return this.deviceInfo.telegram_groupChatId;
+  }
+
   getDeviceStatus() {
 
   }
