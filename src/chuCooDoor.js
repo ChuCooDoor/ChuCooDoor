@@ -46,7 +46,7 @@ class ChuCooDoor {
     */
     this.status = -2;
 
-    this.logger.log('Ready');
+    this.log('Ready');
 
     // check status when device is on ready.
     this.onCheck();
@@ -57,7 +57,7 @@ class ChuCooDoor {
   }
 
   onBeforeDisconnect() {
-    this.logger.log('before disconnect');
+    this.log('before disconnect');
   }
 
   onDisconnect() {
@@ -65,26 +65,26 @@ class ChuCooDoor {
 
     this.sendMessage(this.devGroupChatId, 'ＧＧ')
       .then(message => {
-        this.logger.log('斷線訊息寄送成功');
+        this.log('斷線訊息寄送成功');
       })
       .catch(error=> {
-        this.logger.log('斷線訊息寄送失敗：' + error);
+        this.log('斷線訊息寄送失敗：' + error);
       });
 
-    this.logger.log('disconnect');
+    this.log('disconnect');
 
     setTimeout( () => {createWebArduino(webduinoOptions);}, 5000);
   }
 
   onError(error) {
     this.status = -1;
-    this.logger.log(error)
+    this.log(error)
     this.sendMessage(this.devGroupChatId, error)
       .then(message => {
-        this.logger.log('Error 訊息寄送成功');
+        this.log('Error 訊息寄送成功');
       })
       .catch(error=> {
-        this.logger.log('Error 訊息寄送失敗：' + error);
+        this.log('Error 訊息寄送失敗：' + error);
       });
   }
 
@@ -99,7 +99,7 @@ class ChuCooDoor {
   check() {
     const boardValue = this.board.getDigitalPin(this.deviceInfo.boardPin).value;
 
-    this.logger.log('boardValue: ' + boardValue);
+    this.log('boardValue: ' + boardValue);
 
     // prevent bad call(status of lock has not changed).
     if (this.status !== boardValue) {
@@ -121,17 +121,17 @@ class ChuCooDoor {
       this.status = boardValue;
       this.sendMessage(chatId, text)
         .then(message => {
-          this.logger.log('開始偵測訊息寄送成功');
+          this.log('開始偵測訊息寄送成功');
           this.getSnapshot(chatId, message.message_id);
         })
         .catch(error=> {
-          this.logger.log('開始偵測訊息寄送失敗：' + error);
+          this.log('開始偵測訊息寄送失敗：' + error);
         });
 
-      this.logger.log(text);
+      this.log(text);
 
     } else {
-      this.logger.log('忽略');
+      this.log('忽略');
     }
   }
 
@@ -157,12 +157,12 @@ class ChuCooDoor {
               }
               this.sendMessage(this.devGroupChatId, '找無攝影機', message_options)
                 .then(message => {
-                  this.logger.log('找無攝影機訊息寄送成功');
+                  this.log('找無攝影機訊息寄送成功');
                 })
                 .catch(error=> {
-                  this.logger.log('錯誤訊息寄送失敗：' + error);
+                  this.log('錯誤訊息寄送失敗：' + error);
                 });
-              this.logger.log('找無攝影機');
+              this.log('找無攝影機');
             } else {
               this.hydra.getSnapshotLink(hydraCamera.data.streamHigh)
                 .then(res => {
@@ -171,7 +171,7 @@ class ChuCooDoor {
                   setTimeout( () => {
                     this.getImage(res.P)
                       .then(res => {
-                        this.logger.log('成功獲取截圖');
+                        this.log('成功獲取截圖');
 
                         let message_options = {
                           disable_notification: true,
@@ -179,14 +179,14 @@ class ChuCooDoor {
                         };
                         this.bot.sendPhoto(chatId, res, message_options)
                           .then(message => {
-                            this.logger.log('截圖寄送成功');
+                            this.log('截圖寄送成功');
                           })
                           .catch(error=> {
-                            this.logger.log('截圖寄送失敗' + error);
+                            this.log('截圖寄送失敗' + error);
                           });
                       })
                       .catch(error=> {
-                        this.logger.log('無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + error);
+                        this.log('無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + error);
                         let message_options = {
                           parse_mode: 'Markdown'
                         };
@@ -196,10 +196,10 @@ class ChuCooDoor {
 
                         this.sendMessage(this.devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + error+ '`',  message_options)
                           .then(message => {
-                            this.logger.log('無法取得截圖訊息寄送成功');
+                            this.log('無法取得截圖訊息寄送成功');
                           })
                           .catch(error=> {
-                            this.logger.log('無法取得截圖訊息寄送失敗：' + error);
+                            this.log('無法取得截圖訊息寄送失敗：' + error);
                           });
                       });
                   }, 500);
@@ -214,12 +214,12 @@ class ChuCooDoor {
 
                   this.sendMessage(this.devGroupChatId, '無法取得截圖網址\n`' + error+ '`', message_options)
                     .then(message => {
-                      this.logger.log('無法取得截圖網址訊息寄送成功');
+                      this.log('無法取得截圖網址訊息寄送成功');
                     })
                     .catch(error=> {
-                      this.logger.log('無法取得截圖網址訊息寄送失敗： ' + error);
+                      this.log('無法取得截圖網址訊息寄送失敗： ' + error);
                     });
-                  this.logger.log('無法取得截圖網址： ' + error);
+                  this.log('無法取得截圖網址： ' + error);
                 });
             }
           })
@@ -233,12 +233,12 @@ class ChuCooDoor {
 
             this.sendMessage(this.devGroupChatId, '無法取得攝影機列表\n`' + error+ '`', message_options)
               .then(message => {
-                this.logger.log('無法取得攝影機列表訊息寄送成功');
+                this.log('無法取得攝影機列表訊息寄送成功');
               })
               .catch(error=> {
-                this.logger.log('無法取得攝影機列表訊息寄送失敗： ' + error);
+                this.log('無法取得攝影機列表訊息寄送失敗： ' + error);
               });
-            this.logger.log('無法取得攝影機列表');
+            this.log('無法取得攝影機列表');
           });
       })
       .catch(error=> {
@@ -250,12 +250,12 @@ class ChuCooDoor {
         }
         this.sendMessage(this.devGroupChatId, '無法登入 Hydra\n`' + error+ '`', message_options)
           .then(message => {
-            this.logger.log('無法登入 Hydra 訊息寄送成功');
+            this.log('無法登入 Hydra 訊息寄送成功');
           })
           .catch(error=> {
-            this.logger.log('無法登入 Hydra 訊息寄送失敗：' + error);
+            this.log('無法登入 Hydra 訊息寄送失敗：' + error);
           });
-        this.logger.log('無法登入 Hydra');
+        this.log('無法登入 Hydra');
       });
   }
 
@@ -272,6 +272,10 @@ class ChuCooDoor {
   sendMessage(chatId, text, options) {
     text = `${this.deviceInfo.groupTitle}: ${text}`;
     return this.bot.sendMessage(chatId, text, options);
+  }
+
+  log(text) {
+    this.logger.log(text);
   }
 
 }
