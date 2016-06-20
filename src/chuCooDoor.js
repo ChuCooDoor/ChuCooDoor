@@ -23,7 +23,7 @@ class ChuCooDoor {
     this.board.on(Webduino.BoardEvent.READY, () => {this.onReady();});
     this.board.on(Webduino.BoardEvent.BEFOREDISCONNECT, () => {this.onBeforeDisconnect();});
     this.board.on(Webduino.BoardEvent.DISCONNECT, () => {this.onDisconnect();});
-    this.board.on(Webduino.BoardEvent.ERROR, error => {this.onError();} );
+    this.board.on(Webduino.BoardEvent.ERROR, error => {this.onError(error);} );
 
   }
 
