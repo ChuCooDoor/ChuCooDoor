@@ -13,5 +13,5 @@
 
 ### 編譯執行
 - 編譯並執行：`$ npm start`
-- 編譯並重新啟動：`$ npm restart`
-- pull 並編譯並重新啟動：`$ npm pull`
+- 編譯並重新啟動：`$ npm run restart`
+- pull 並編譯並重新啟動：`$ npm run pull`
