@@ -1,5 +1,8 @@
 # ChuCooDoor 門鎖監控即時通知
 
+## 環境設定
+`$ sudo npm install -g pm2`
+
 ## build
 
 ### 建立 `src/env.js`
@@ -8,8 +11,7 @@
 ### 安裝依賴
 `$ npm install`
 
-### 編譯
-`$ npm run build`
-
-### 開始監測
-`$ npm start`
+### 編譯執行
+- 編譯並執行：`$ npm start`
+- 編譯並重新啟動：`$ npm restart`
+- pull 並編譯並重新啟動：`$ npm pull`
