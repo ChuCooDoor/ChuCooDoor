@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node lib/index.js",
+    "start": "npm run build && pm2 start lib/index.js",
+    "restart": "npm run build && pm2 restart lib/index.js",
+    "pull": "git pull && npm run restart",
     "build": "babel src -d lib --source-maps",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
