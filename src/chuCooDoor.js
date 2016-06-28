@@ -153,127 +153,166 @@ class ChuCooDoor {
   }
 
   getSnapshot(chatId, messageId) {
-    let hydraCamera;
+    let snapshotLink = `http://${this.deviceInfo.cameraIp}/web/snapshot.jpg`;
 
-    this.hydra.login()
+    this.getImage(snapshotLink)
       .then(res => {
-        this.hydra.getCameraList()
-          .then(res => {
-            // search camera whose id is equal to device's camera id.
-            for (let index = 0; index < res.P.length; index++) {
-              if (res.P[index].id == this.deviceInfo.hydraCameraId) {
-                hydraCamera = res.P[index];
-                break;
-              }
-            }
-            if (!hydraCamera) {
-              let message_options = {};
-              // no camera is matched.
-              if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
-                message_options = {reply_to_message_id: messageId};
-              }
-              this.sendMessage(this.devGroupChatId, '找無攝影機', message_options)
-                .then(message => {
-                  this.log('找無攝影機訊息寄送成功');
-                })
-                .catch(error=> {
-                  this.log('錯誤訊息寄送失敗：' + error);
-                });
-              this.log('找無攝影機');
-            } else {
-              this.hydra.getSnapshotLink(hydraCamera.data.streamHigh)
-                .then(res => {
-                  const snapshotLink = res;
-                  // 取得截圖網址後，延遲半秒鐘再拿圖。
-                  setTimeout( () => {
-                    this.getImage(res.P)
-                      .then(res => {
-                        this.log('成功獲取截圖');
+        this.log('成功獲取截圖');
 
-                        let message_options = {
-                          disable_notification: true,
-                          reply_to_message_id: messageId
-                        };
-                        this.bot.sendPhoto(chatId, res, message_options)
-                          .then(message => {
-                            this.log('截圖寄送成功');
-                          })
-                          .catch(error=> {
-                            this.log('截圖寄送失敗' + error);
-                          });
-                      })
-                      .catch(error=> {
-                        this.log('無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + error);
-                        let message_options = {
-                          parse_mode: 'Markdown'
-                        };
-                        if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
-                          message_options.reply_to_message_id = messageId;
-                        }
-
-                        this.sendMessage(this.devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + error+ '`',  message_options)
-                          .then(message => {
-                            this.log('無法取得截圖訊息寄送成功');
-                          })
-                          .catch(error=> {
-                            this.log('無法取得截圖訊息寄送失敗：' + error);
-                          });
-                      });
-                  }, 500);
-                })
-                .catch(error=> {
-                  let message_options = {
-                    parse_mode: 'Markdown'
-                  };
-                  if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
-                    message_options.reply_to_message_id = messageId;
-                  }
-
-                  this.sendMessage(this.devGroupChatId, '無法取得截圖網址\n`' + error+ '`', message_options)
-                    .then(message => {
-                      this.log('無法取得截圖網址訊息寄送成功');
-                    })
-                    .catch(error=> {
-                      this.log('無法取得截圖網址訊息寄送失敗： ' + error);
-                    });
-                  this.log('無法取得截圖網址： ' + error);
-                });
-            }
-          })
-          .catch(error=> {
-            let message_options = {
-              parse_mode: 'Markdown'
-            };
-            if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
-              message_options.reply_to_message_id = messageId;
-            }
-
-            this.sendMessage(this.devGroupChatId, '無法取得攝影機列表\n`' + error+ '`', message_options)
-              .then(message => {
-                this.log('無法取得攝影機列表訊息寄送成功');
-              })
-              .catch(error=> {
-                this.log('無法取得攝影機列表訊息寄送失敗： ' + error);
-              });
-            this.log('無法取得攝影機列表');
-          });
-      })
-      .catch(error=> {
         let message_options = {
-          parse_mode: 'Markdown'
+          disable_notification: true,
+          reply_to_message_id: messageId
         };
-        if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
-          message_options.reply_to_message_id = messageId;
-        }
-        this.sendMessage(this.devGroupChatId, '無法登入 Hydra\n`' + error+ '`', message_options)
+
+        this.bot.sendPhoto(chatId, res, message_options)
           .then(message => {
-            this.log('無法登入 Hydra 訊息寄送成功');
+            this.log('截圖寄送成功');
           })
           .catch(error=> {
-            this.log('無法登入 Hydra 訊息寄送失敗：' + error);
+            this.log(`截圖寄送失敗 ${error}`);
           });
-        this.log('無法登入 Hydra');
-      });
+        })
+        .catch(error=> {
+          this.log(`無法取得截圖 ${error}`);
+
+          let message_options = {
+            parse_mode: 'Markdown'
+          };
+
+          if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
+            message_options.reply_to_message_id = messageId;
+          }
+
+          this.sendMessage(this.devGroupChatId, '無法取得截圖\n`' + error+ '`',  message_options)
+            .then(message => {
+              this.log('無法取得截圖訊息寄送成功');
+            })
+            .catch(error=> {
+              this.log('無法取得截圖訊息寄送失敗：' + error);
+            });
+        });
+
+    // let hydraCamera;
+
+    // this.hydra.login()
+    //   .then(res => {
+    //     this.hydra.getCameraList()
+    //       .then(res => {
+    //         // search camera whose id is equal to device's camera id.
+    //         for (let index = 0; index < res.P.length; index++) {
+    //           if (res.P[index].id == this.deviceInfo.hydraCameraId) {
+    //             hydraCamera = res.P[index];
+    //             break;
+    //           }
+    //         }
+    //         if (!hydraCamera) {
+    //           let message_options = {};
+    //           // no camera is matched.
+    //           if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
+    //             message_options = {reply_to_message_id: messageId};
+    //           }
+    //           this.sendMessage(this.devGroupChatId, '找無攝影機', message_options)
+    //             .then(message => {
+    //               this.log('找無攝影機訊息寄送成功');
+    //             })
+    //             .catch(error=> {
+    //               this.log('錯誤訊息寄送失敗：' + error);
+    //             });
+    //           this.log('找無攝影機');
+    //         } else {
+    //           this.hydra.getSnapshotLink(hydraCamera.data.streamHigh)
+    //             .then(res => {
+    //               const snapshotLink = res;
+    //               // 取得截圖網址後，延遲半秒鐘再拿圖。
+    //               setTimeout( () => {
+    //                 this.getImage(res.P)
+    //                   .then(res => {
+    //                     this.log('成功獲取截圖');
+    //
+    //                     let message_options = {
+    //                       disable_notification: true,
+    //                       reply_to_message_id: messageId
+    //                     };
+    //                     this.bot.sendPhoto(chatId, res, message_options)
+    //                       .then(message => {
+    //                         this.log('截圖寄送成功');
+    //                       })
+    //                       .catch(error=> {
+    //                         this.log('截圖寄送失敗' + error);
+    //                       });
+    //                   })
+    //                   .catch(error=> {
+    //                     this.log('無法取得截圖 ; ' + JSON.stringify(snapshotLink) + ' ; ' + error);
+    //                     let message_options = {
+    //                       parse_mode: 'Markdown'
+    //                     };
+    //                     if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
+    //                       message_options.reply_to_message_id = messageId;
+    //                     }
+    //
+    //                     this.sendMessage(this.devGroupChatId, '無法取得截圖\n`' + JSON.stringify(snapshotLink) + '`\n`' + error+ '`',  message_options)
+    //                       .then(message => {
+    //                         this.log('無法取得截圖訊息寄送成功');
+    //                       })
+    //                       .catch(error=> {
+    //                         this.log('無法取得截圖訊息寄送失敗：' + error);
+    //                       });
+    //                   });
+    //               }, 500);
+    //             })
+    //             .catch(error=> {
+    //               let message_options = {
+    //                 parse_mode: 'Markdown'
+    //               };
+    //               if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
+    //                 message_options.reply_to_message_id = messageId;
+    //               }
+    //
+    //               this.sendMessage(this.devGroupChatId, '無法取得截圖網址\n`' + error+ '`', message_options)
+    //                 .then(message => {
+    //                   this.log('無法取得截圖網址訊息寄送成功');
+    //                 })
+    //                 .catch(error=> {
+    //                   this.log('無法取得截圖網址訊息寄送失敗： ' + error);
+    //                 });
+    //               this.log('無法取得截圖網址： ' + error);
+    //             });
+    //         }
+    //       })
+    //       .catch(error=> {
+    //         let message_options = {
+    //           parse_mode: 'Markdown'
+    //         };
+    //         if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
+    //           message_options.reply_to_message_id = messageId;
+    //         }
+    //
+    //         this.sendMessage(this.devGroupChatId, '無法取得攝影機列表\n`' + error+ '`', message_options)
+    //           .then(message => {
+    //             this.log('無法取得攝影機列表訊息寄送成功');
+    //           })
+    //           .catch(error=> {
+    //             this.log('無法取得攝影機列表訊息寄送失敗： ' + error);
+    //           });
+    //         this.log('無法取得攝影機列表');
+    //       });
+    //   })
+    //   .catch(error=> {
+    //     let message_options = {
+    //       parse_mode: 'Markdown'
+    //     };
+    //     if (this.devGroupChatId == this.deviceInfo.telegram_groupChatId) {
+    //       message_options.reply_to_message_id = messageId;
+    //     }
+    //     this.sendMessage(this.devGroupChatId, '無法登入 Hydra\n`' + error+ '`', message_options)
+    //       .then(message => {
+    //         this.log('無法登入 Hydra 訊息寄送成功');
+    //       })
+    //       .catch(error=> {
+    //         this.log('無法登入 Hydra 訊息寄送失敗：' + error);
+    //       });
+    //     this.log('無法登入 Hydra');
+    //   });
   }
 
   getImage(url) {
