@@ -43,7 +43,7 @@ bot.onText(/\/status/, function (msg) {
   const msgId = msg.message_id;
 
   for (let index = 0; index < chuCooDoors.length; index++) {
-    if (chuCooDoors[index].getChatId() == chatId) {
+    if (chuCooDoors[index].getChatId() == chatId || chatId == basicInfos.telegram_devGroupChatId) {
       chuCooDoors[index].sendDeviceStatus(chatId, msgId)
         .then(function (message) {
           chuCooDoors[index].log('回應狀態寄送成功');
