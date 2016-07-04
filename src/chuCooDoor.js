@@ -110,7 +110,7 @@ class ChuCooDoor {
     if (this.timer) {
       clearTimeout(this.timer);
     }
-    this.timer = setTimeout( () => {this.check();}, 3000);
+    this.timer = setTimeout( () => {this.check();}, 2000);
   }
 
   check() {
@@ -139,7 +139,7 @@ class ChuCooDoor {
       this.sendMessage(chatId, text)
         .then(message => {
           this.log('開始偵測訊息寄送成功');
-          this.getSnapshot(chatId, message.message_id);
+          setTimeout( () => {this.getSnapshot(chatId, message.message_id);}, 3000 );
         })
         .catch(error=> {
           this.log('開始偵測訊息寄送失敗：' + error);
