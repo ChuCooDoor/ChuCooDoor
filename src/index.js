@@ -18,7 +18,7 @@ bot.sendMessage(basicInfos.telegram_devGroupChatId, '系統啟動！')
   .then(message => {
     logger.log('系統啟動訊息寄送成功');
   })
-  .catch(err => {
+  .catch(error => {
     logger.log(`系統啟動訊息寄送失敗： ${error}`);
   });
 

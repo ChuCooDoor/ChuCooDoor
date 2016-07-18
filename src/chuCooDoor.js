@@ -84,7 +84,7 @@ class ChuCooDoor {
       .then(message => {
         this.log('斷線訊息寄送成功');
       })
-      .catch(error=> {
+      .catch(error => {
         this.log('斷線訊息寄送失敗：' + error);
       });
 
@@ -100,7 +100,7 @@ class ChuCooDoor {
       .then(message => {
         this.log('Error 訊息寄送成功');
       })
-      .catch(error=> {
+      .catch(error => {
         this.log('Error 訊息寄送失敗：' + error);
       });
   }
