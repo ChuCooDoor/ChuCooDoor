@@ -90,7 +90,7 @@ class ChuCooDoor {
 
     this.log('disconnect');
 
-    setTimeout( () => {createWebArduino(webduinoOptions);}, 5000);
+    setTimeout( () => {this.createWebArduino(webduinoOptions);}, 5000);
   }
 
   onError(error) {
