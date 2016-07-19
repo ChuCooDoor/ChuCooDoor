@@ -1,4 +1,4 @@
-import rp from 'request-promise';
+import rp from 'request-promise-native';
 import Logger from './logger.js';
 import Hydra from './hydra.js';
 import Webduino from 'webduino-js';

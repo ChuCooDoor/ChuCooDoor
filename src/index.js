@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import rp from 'request-promise';
+import rp from 'request-promise-native';
 import Logger from './logger.js';
 import ChuCooDoor from './chuCooDoor.js';
 import { basicInfos, hydraInfos, devicesInfos } from './env.js';

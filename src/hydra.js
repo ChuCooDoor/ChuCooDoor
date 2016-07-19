@@ -1,4 +1,4 @@
-import rp from 'request-promise';
+import rp from 'request-promise-native';
 
 class Hydra {
   constructor(baseUrl, hydraId, deviceInfo) {
