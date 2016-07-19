@@ -19,16 +19,15 @@ class ChuCooDoor {
     };
 
     this.createWebArduino(this.WebduinoOptions);
-
-    this.board.on(Webduino.BoardEvent.READY, () => {this.onReady();});
-    this.board.on(Webduino.BoardEvent.BEFOREDISCONNECT, () => {this.onBeforeDisconnect();});
-    this.board.on(Webduino.BoardEvent.DISCONNECT, () => {this.onDisconnect();});
-    this.board.on(Webduino.BoardEvent.ERROR, error => {this.onError(error);} );
-
   }
 
   createWebArduino(options) {
     this.board = new Webduino.WebArduino(options);
+    
+    this.board.on(Webduino.BoardEvent.READY, () => {this.onReady();});
+    this.board.on(Webduino.BoardEvent.BEFOREDISCONNECT, () => {this.onBeforeDisconnect();});
+    this.board.on(Webduino.BoardEvent.DISCONNECT, () => {this.onDisconnect();});
+    this.board.on(Webduino.BoardEvent.ERROR, error => {this.onError(error);} );
   }
 
   getChatId() {
@@ -90,7 +89,7 @@ class ChuCooDoor {
 
     this.log('disconnect');
 
-    setTimeout( () => {this.createWebArduino(this.webduinoOptions);}, 5000);
+    this.createWebArduino(this.webduinoOptions);
   }
 
   onError(error) {
