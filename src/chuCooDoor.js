@@ -13,12 +13,12 @@ class ChuCooDoor {
     this.hydra = new Hydra(hydraInfos.baseUrl, hydraInfos.id, this.deviceInfo);
 
     // device info of webduino
-    this.WebduinoOptions = {
+    this.webduinoOptions = {
       device: this.deviceInfo.boardId,
       server: mqttBroker
     };
 
-    this.createWebArduino(this.WebduinoOptions);
+    this.createWebArduino(this.webduinoOptions);
   }
 
   createWebArduino(options) {
