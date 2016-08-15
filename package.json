@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && node start lib/index.js",
+    "start": "npm run build && node lib/index.js",
     "pm2-start": "npm run build && pm2 start lib/index.js",
     "pm2-restart": "npm run build && pm2 restart lib/index.js",
     "build": "babel src -d lib --source-maps",

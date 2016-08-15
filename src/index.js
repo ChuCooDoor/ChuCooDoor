@@ -20,7 +20,6 @@ let chuCooDoors = [];
 for (var index = 0; index < devicesInfos.length; index++) {
   if (devicesInfos[index].type === 'webduino') {
     chuCooDoors.push( new ChuCooDoorWebduino(devicesInfos[index], basicInfos.mqttBroker, basicInfos.telegram_devGroupChatId, bot) );
-  }
   } else if (devicesInfos[index].type === 'rpi') {
     chuCooDoors.push( new ChuCooDoorRPI(devicesInfos[index], basicInfos.telegram_devGroupChatId, bot) );
   }
@@ -39,7 +38,7 @@ router.post('/updateStatus', function (request, response) {
   logger.log(`收到更新狀態要求 boardId: ${boardId}, boardValue: ${boardValue}`);
 
   for (let index = 0; index < chuCooDoors.length; index++) {
-    if (chuCooDoors[index].getBoardId() === boardId && chuCooDoors[index].type === 'rpi') {
+    if (chuCooDoors[index].getBoardId() === boardId && chuCooDoors[index].getType() === 'rpi') {
       chuCooDoors[index].updateStatus(boardValue);
       response.writeHead( 200, {
         'Content-Type' : 'text/plain; charset=utf-8'

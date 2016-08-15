@@ -36,6 +36,10 @@ class ChuCooDoorWebduino {
     return this.deviceInfo.boardId;
   }
 
+  getType() {
+    return this.deviceInfo.type;
+  }
+
   sendDeviceStatus(chatId, msgId) {
     const status = this.status;
     let text = '';
