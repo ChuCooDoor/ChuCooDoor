@@ -1,18 +1,79 @@
+import Http from 'http';
+import Router from 'router';
+import BodyParser from 'body-parser';
 import TelegramBot from 'node-telegram-bot-api';
 import rp from 'request-promise-native';
 import Logger from './logger.js';
-import ChuCooDoor from './chuCooDoor.js';
+import ChuCooDoorWebduino from './chuCooDoorWebduino.js';
+import ChuCooDoorRPI from './chuCooDoorRPI.js';
 import { basicInfos, hydraInfos, devicesInfos } from './env.js';
 
-
 // init telegram bot with polling
+
 const bot = new TelegramBot(basicInfos.telegram_token, {polling: true});
 const logger = new Logger('System');
+
+// init ChuCooDoors
+
 let chuCooDoors = [];
 
 for (var index = 0; index < devicesInfos.length; index++) {
-  chuCooDoors.push( new ChuCooDoor(devicesInfos[index], basicInfos.mqttBroker, basicInfos.telegram_devGroupChatId, hydraInfos, bot) );
+  if (devicesInfos[index].type === 'webduino') {
+    chuCooDoors.push( new ChuCooDoorWebduino(devicesInfos[index], basicInfos.mqttBroker, basicInfos.telegram_devGroupChatId, bot) );
+  }
+  } else if (devicesInfos[index].type === 'rpi') {
+    chuCooDoors.push( new ChuCooDoorRPI(devicesInfos[index], basicInfos.telegram_devGroupChatId, bot) );
+  }
 }
+
+// server for rpi-senser
+
+let router = new Router();
+router.use(BodyParser.json());
+
+router.post('/updateStatus', function (request, response) {
+  console.log(JSON.stringify(request.body));
+  const boardId = request.body.boardId;
+  const boardValue = request.body.boardValue;
+
+  logger.log(`收到更新狀態要求 boardId: ${boardId}, boardValue: ${boardValue}`);
+
+  for (let index = 0; index < chuCooDoors.length; index++) {
+    if (chuCooDoors[index].getBoardId() === boardId && chuCooDoors[index].type === 'rpi') {
+      chuCooDoors[index].updateStatus(boardValue);
+      response.writeHead( 200, {
+        'Content-Type' : 'text/plain; charset=utf-8'
+      });
+      response.end('Succeed');
+      break;
+    }
+  }
+
+  response.writeHead( 404, {
+    'Content-Type' : 'text/plain; charset=utf-8'
+  });
+  response.end('Not Found');
+
+});
+
+const server = Http.createServer(function(request, response) {
+  // router(req, res, finalhandler(req, res));
+  router( request, response, function( error ) {
+    if ( !error ) {
+      response.writeHead( 404 );
+    } else {
+      // Handle errors
+      console.log( error.message, error.stack );
+      response.writeHead( 400 );
+    }
+    response.end( 'RESTful API Server is running!' );
+  });
+})
+
+server.listen(3000);
+
+
+// bot scripts
 
 bot.sendMessage(basicInfos.telegram_devGroupChatId, '系統啟動！')
   .then(message => {
