@@ -54,7 +54,14 @@ class ChuCooDoorWebduino {
       text = '關門中';
     }
 
-    return this.sendMessage(chatId, text, {reply_to_message_id: msgId});
+    this.sendMessage(chatId, text, {reply_to_message_id: msgId})
+      .then(message => {
+        this.log('回應狀態寄送成功');
+        this.getSnapshot(chatId, message.message_id);
+      })
+      .catch(error => {
+        this.log('回應狀態寄送失敗：' + error);
+      });
   }
 
   onReady() {

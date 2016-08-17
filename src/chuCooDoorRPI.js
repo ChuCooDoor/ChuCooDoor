@@ -23,21 +23,58 @@ class ChuCooDoorRPI {
     return this.deviceInfo.type;
   }
 
-  sendDeviceStatus(chatId, msgId) {
-    const status = this.status;
+  syncBoardValue() {
+    let options = {
+      method: 'GET',
+      uri: `http://${this.deviceInfo.boardIp}/boardValue/${this.deviceInfo.boardId}`,
+      json: true // Automatically stringifies the body to JSON
+    };
+
+    return rp(options);
+  }
+
+  check() {
     let text = '';
 
-    if (status == -2) {
+    if (this.status == -2) {
       text = '初始化中';
-    } else if (status == -1) {
+    } else if (this.status == -1) {
       text = 'GG 中';
-    } else if (status == 1) {
+    } else if (this.status == 1) {
       text = '關門中';
-    } else if (status == 0) {
+    } else if (this.status == 0) {
       text = '開門中';
     }
 
-    return this.sendMessage(chatId, text, {reply_to_message_id: msgId});
+    return text;
+  }
+
+  sendDeviceStatus(chatId, msgId) {
+    this.syncBoardValue()
+      .then(message => {
+        this.log( 'syncBoardValue 成功: ' + JSON.stringify(message) );
+        this.status = message.boardValue;
+        this.sendMessage(chatId, this.check(), {reply_to_message_id: msgId})
+          .then(message => {
+            this.log('回應狀態寄送成功');
+            this.getSnapshot(chatId, message.message_id);
+          })
+          .catch(error => {
+            this.log('回應狀態寄送失敗：' + error);
+          });
+      })
+      .catch(error => {
+        this.log( 'syncBoardValue 失敗: ' + JSON.stringify(error) );
+        this.status = -1;
+        this.sendMessage(chatId, this.check(), {reply_to_message_id: msgId})
+          .then(message => {
+            this.log('回應狀態寄送成功');
+            this.getSnapshot(chatId, message.message_id);
+          })
+          .catch(error => {
+            this.log('回應狀態寄送失敗：' + error);
+          });
+      });
   }
 
   updateStatus(boardValue) {

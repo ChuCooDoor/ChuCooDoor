@@ -41,17 +41,17 @@ router.post('/updateStatus', function (request, response) {
     if (chuCooDoors[index].getBoardId() === boardId && chuCooDoors[index].getType() === 'rpi') {
       chuCooDoors[index].updateStatus(boardValue);
       response.writeHead( 200, {
-        'Content-Type' : 'text/plain; charset=utf-8'
+        'Content-Type' : 'application/json; charset=utf-8'
       });
-      response.end('Succeed');
+      response.end( JSON.stringify({message: 'Succeed'}) );
       break;
     }
   }
 
   response.writeHead( 404, {
-    'Content-Type' : 'text/plain; charset=utf-8'
+    'Content-Type' : 'application/json; charset=utf-8'
   });
-  response.end('Not Found');
+  response.end( JSON.stringify({message: 'Not Found'}) );
 
 });
 
@@ -59,13 +59,17 @@ const server = Http.createServer(function(request, response) {
   // router(req, res, finalhandler(req, res));
   router( request, response, function( error ) {
     if ( !error ) {
-      response.writeHead( 404 );
+      response.writeHead( 404, {
+        'Content-Type' : 'application/json; charset=utf-8'
+      });
     } else {
       // Handle errors
       console.log( error.message, error.stack );
-      response.writeHead( 400 );
+      response.writeHead( 400, {
+        'Content-Type' : 'application/json; charset=utf-8'
+      });
     }
-    response.end( 'RESTful API Server is running!' );
+    response.end( JSON.stringify({message: 'RESTful API Server is running!'}) );
   });
 })
 
@@ -104,14 +108,7 @@ bot.onText(/\/status/, function (msg) {
 
   for (let index = 0; index < chuCooDoors.length; index++) {
     if (chuCooDoors[index].getChatId() == chatId || chatId == basicInfos.telegram_devGroupChatId) {
-      chuCooDoors[index].sendDeviceStatus(chatId, msgId)
-        .then(function (message) {
-          chuCooDoors[index].log('回應狀態寄送成功');
-          chuCooDoors[index].getSnapshot(chatId, message.message_id);
-        })
-        .catch(function (error) {
-          chuCooDoors[index].log('回應狀態寄送失敗：' + error);
-        });
+      chuCooDoors[index].sendDeviceStatus(chatId, msgId);
     }
   }
 });
