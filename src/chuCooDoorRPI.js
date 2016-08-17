@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import rp from 'request-promise-native';
 import rpio from 'rpio';
 import Logger from './logger.js';
@@ -6,9 +8,17 @@ class ChuCooDoorRPI {
   constructor(deviceInfo, devGroupChatId, bot) {
     this.bot = bot;
     this.deviceInfo = deviceInfo;
-    this.status = -2;
     this.devGroupChatId = devGroupChatId;
     this.logger = new Logger(this.deviceInfo.groupTitle);
+    this.recordFilePath = path.join(__dirname, '../', 'record.json');
+    this.status = -2;
+    let record = JSON.parse(fs.readFileSync(this.recordFilePath));
+    for (let i = 0; i < record.length; i++) {
+      if (record[i].boardId === this.deviceInfo.boardId) {
+        this.status = record[i].boardValue;
+        break;
+      }
+    }
   }
 
   getChatId() {
@@ -67,6 +77,14 @@ class ChuCooDoorRPI {
       text = text.concat(` - ${time}`);
 
       // change status of lock.
+      let record = JSON.parse(fs.readFileSync(recordFilePath));
+      for (let i = 0; i < record.length; i++) {
+        if (record[i].boardId === this.deviceInfo.boardId) {
+          record[i].boardValue = boardValue;
+          break;
+        }
+      }
+      fs.writeFileSync(recordFilePath, JSON.stringify(record) );
       this.status = boardValue;
       // 關門不發訊息
       if (this.status != 1) {
