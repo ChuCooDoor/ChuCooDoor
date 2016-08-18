@@ -6,7 +6,7 @@ import rp from 'request-promise-native';
 import Logger from './logger.js';
 import ChuCooDoorWebduino from './chuCooDoorWebduino.js';
 import ChuCooDoorRPI from './chuCooDoorRPI.js';
-import { basicInfos, hydraInfos, devicesInfos } from './env.js';
+import { basicInfos, devicesInfos } from './env.js';
 
 // init telegram bot with polling
 
@@ -73,7 +73,7 @@ const server = Http.createServer(function(request, response) {
   });
 })
 
-server.listen(3000);
+server.listen(basicInfos.serverPort);
 
 
 // bot scripts
