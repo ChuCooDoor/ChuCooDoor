@@ -52,7 +52,16 @@ class ChuCooDoorRPI {
       .then(message => {
         this.log( 'syncBoardValue 成功: ' + JSON.stringify(message) );
         this.status = message.boardValue;
-        this.sendMessage(chatId, this.check(), {reply_to_message_id: msgId})
+
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
+        const hours = date.getHours();
+        const min = date.getMinutes();
+        const dateTimeText = `${year}/${month}/${day} ${hours}:${min}`;
+
+        this.sendMessage(chatId, `${this.check()} - ${dateTimeText}`, {reply_to_message_id: msgId})
           .then(message => {
             this.log('回應狀態寄送成功');
             this.getSnapshot(chatId, message.message_id);
@@ -84,9 +93,13 @@ class ChuCooDoorRPI {
       let chatId = this.deviceInfo.telegram_groupChatId;
       let text = '';
 
-      const d = new Date();
-      const date = d.toLocaleDateString();
-      const time = d.toLocaleTimeString();
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const day = date.getDate();
+      const hours = date.getHours();
+      const min = date.getMinutes();
+      const dateTimeText = `${year}/${month}/${day} ${hours}:${min}`;
 
       if (boardValue === 1) {
         text = '關門';
@@ -94,7 +107,7 @@ class ChuCooDoorRPI {
         text = '開門';
       }
 
-      text = text.concat(` - ${time}`);
+      text = text.concat(` - ${dateTimeText}`);
 
       // change status of lock.
       this.status = boardValue;

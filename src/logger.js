@@ -4,10 +4,15 @@ class Logger {
   }
 
   log(text) {
-    const d = new Date();
-    const date = d.toLocaleDateString();
-    const time = d.toLocaleTimeString();
-    console.log(`${date} ${time}: ${this.groupTitle} ${text}`);
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    const hours = date.getHours();
+    const min = date.getMinutes();
+    const dateTimeText = `${year}/${month}/${day} ${hours}:${min}`;
+
+    console.log(`${dateTimeText}: ${this.groupTitle} ${text}`);
   }
 
 }
