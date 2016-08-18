@@ -6,7 +6,7 @@ class ChuCooDoorRPI {
   constructor(deviceInfo, devGroupChatId, bot) {
     this.bot = bot;
     this.deviceInfo = deviceInfo;
-    this.status = -2;
+    this.status = -1;
     this.devGroupChatId = devGroupChatId;
     this.logger = new Logger(this.deviceInfo.groupTitle);
   }
@@ -36,9 +36,7 @@ class ChuCooDoorRPI {
   check() {
     let text = '';
 
-    if (this.status == -2) {
-      text = '初始化中';
-    } else if (this.status == -1) {
+    if (this.status == -1) {
       text = 'GG 中';
     } else if (this.status == 1) {
       text = '關門中';
@@ -94,11 +92,6 @@ class ChuCooDoorRPI {
         text = '關門';
       } else if (boardValue === 0) {
         text = '開門';
-      }
-      // for initial check.
-      if (this.status === -2) {
-        text = '開始監控: ' + text.concat('中');
-        chatId = this.devGroupChatId;
       }
 
       text = text.concat(` - ${time}`);
