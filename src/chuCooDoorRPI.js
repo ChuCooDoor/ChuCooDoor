@@ -103,7 +103,7 @@ class ChuCooDoorRPI {
         this.sendMessage(chatId, text)
           .then(message => {
             this.log('門狀態改變訊息寄送成功');
-            setTimeout( () => {this.getSnapshot(chatId, message.message_id);}, 3500 );
+            setTimeout( () => {this.getSnapshot(chatId, message.message_id);}, this.deviceInfo.snapshotDelayMillisecond );
           })
           .catch(error=> {
             this.log('開始偵測訊息寄送失敗：' + error);
