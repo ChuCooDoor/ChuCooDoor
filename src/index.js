@@ -89,17 +89,13 @@ bot.sendMessage(basicInfos.telegram_devGroupChatId, '系統啟動！')
 bot.onText(/\/getId/, function (msg) {
   const chatId = msg.chat.id;
 
-  for (let index = 0; index < chuCooDoors.length; index++) {
-    if (chuCooDoors[index].getChatId() == chatId) {
-      chuCooDoors[index].sendMessage(basicInfos.telegram_devGroupChatId, chatId)
-        .then(function (message) {
-          chuCooDoors[index].log('回應 ID 寄送成功');
-        })
-        .catch(function (error) {
-          chuCooDoors[index].log('回應 ID 寄送失敗：' + error);
-        });
-    }
-  }
+  bot.sendMessage(basicInfos.telegram_devGroupChatId, chatId)
+    .then(message => {
+      logger.log(`回應 ID 寄送成功`);
+    })
+    .catch(error => {
+      logger.log(`回應 ID 寄送失敗： ${error}`);
+    });
 });
 
 bot.onText(/\/status/, function (msg) {
