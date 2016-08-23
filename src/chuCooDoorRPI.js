@@ -54,14 +54,9 @@ class ChuCooDoorRPI {
         this.status = message.boardValue;
 
         const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const day = date.getDate();
-        const hours = date.getHours();
-        const min = date.getMinutes();
-        const dateTimeText = `${year}/${month}/${day} ${hours}:${min}`;
+        const dateText = date.toLocaleDateString('zh-TW');
 
-        this.sendMessage(chatId, `${this.check()} - ${dateTimeText}`, {reply_to_message_id: msgId})
+        this.sendMessage(chatId, `${this.check()} - ${dateText}`, {reply_to_message_id: msgId})
           .then(message => {
             this.log('回應狀態寄送成功');
             this.getSnapshot(chatId, message.message_id);
