@@ -47,14 +47,18 @@ class ChuCooDoorRPI {
     return text;
   }
 
+  getDateText() {
+    const date = new Date();
+    return date.toLocaleString('zh-TW');
+  }
+
   sendDeviceStatus(chatId, msgId) {
     this.syncBoardValue()
       .then(message => {
         this.log( 'syncBoardValue 成功: ' + JSON.stringify(message) );
         this.status = message.boardValue;
 
-        const date = new Date();
-        const dateText = date.toLocaleDateString('zh-TW');
+        const dateText = this.getDateText();
 
         this.sendMessage(chatId, `${this.check()} - ${dateText}`, {reply_to_message_id: msgId})
           .then(message => {
@@ -88,13 +92,7 @@ class ChuCooDoorRPI {
       let chatId = this.deviceInfo.telegram_groupChatId;
       let text = '';
 
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const day = date.getDate();
-      const hours = date.getHours();
-      const min = date.getMinutes();
-      const dateTimeText = `${year}/${month}/${day} ${hours}:${min}`;
+      const dateText = this.getDateText();
 
       if (boardValue === 1) {
         text = '關門';
@@ -102,7 +100,7 @@ class ChuCooDoorRPI {
         text = '開門';
       }
 
-      text = text.concat(` - ${dateTimeText}`);
+      text = text.concat(` - ${dateText}`);
 
       // change status of lock.
       this.status = boardValue;

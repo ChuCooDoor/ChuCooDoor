@@ -5,7 +5,7 @@ class Logger {
 
   log(text) {
     const date = new Date();
-    const dateText = date.toLocaleDateString('zh-TW');
+    const dateText = date.toLocaleString('zh-TW');
 
     console.log(`${dateText}: ${this.groupTitle} ${text}`);
   }
