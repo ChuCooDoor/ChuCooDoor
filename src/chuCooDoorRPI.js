@@ -1,3 +1,4 @@
+import Moment from 'moment';
 import rp from 'request-promise-native';
 import rpio from 'rpio';
 import Logger from './logger.js';
@@ -48,8 +49,7 @@ class ChuCooDoorRPI {
   }
 
   getDateText() {
-    const date = new Date();
-    return date.toLocaleString('zh-TW');
+    return moment().format( 'YYYY/MM/DD HH:mm:ss')
   }
 
   sendDeviceStatus(chatId, msgId) {

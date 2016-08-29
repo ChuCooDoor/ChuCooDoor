@@ -1,12 +1,12 @@
+import Moment from 'moment';
+
 class Logger {
   constructor(groupTitle) {
     this.groupTitle = groupTitle;
   }
 
   log(text) {
-    const date = new Date();
-    const dateText = date.toLocaleString('zh-TW');
-
+    const dateText = moment().format( 'YYYY/MM/DD HH:mm:ss')
     console.log(`${dateText}: ${this.groupTitle} ${text}`);
   }
 }
