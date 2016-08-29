@@ -63,7 +63,9 @@ class ChuCooDoorRPI {
         this.sendMessage(chatId, `${this.check()} - ${dateText}`, {reply_to_message_id: msgId})
           .then(message => {
             this.log('回應狀態寄送成功');
-            this.getSnapshot(chatId, message.message_id);
+            for (let i = 0; i < this.deviceInfo.snapshotLinks.length; i++) {
+              this.getSnapshot(this.deviceInfo.snapshotLinks[i], chatId, message.message_id);
+            }
           })
           .catch(error => {
             this.log('回應狀態寄送失敗：' + error);
@@ -75,7 +77,9 @@ class ChuCooDoorRPI {
         this.sendMessage(chatId, this.check(), {reply_to_message_id: msgId})
           .then(message => {
             this.log('回應狀態寄送成功');
-            this.getSnapshot(chatId, message.message_id);
+            for (let i = 0; i < this.deviceInfo.snapshotLinks.length; i++) {
+              this.getSnapshot(this.deviceInfo.snapshotLinks[i], chatId, message.message_id);
+            }
           })
           .catch(error => {
             this.log('回應狀態寄送失敗：' + error);
@@ -109,7 +113,13 @@ class ChuCooDoorRPI {
         this.sendMessage(chatId, text)
           .then(message => {
             this.log('門狀態改變訊息寄送成功');
-            setTimeout( () => {this.getSnapshot(chatId, message.message_id);}, this.deviceInfo.snapshotDelayMillisecond );
+            setTimeout(
+              () => {
+                for (let i = 0; i < this.deviceInfo.snapshotLinks.length; i++) {
+                  this.getSnapshot(this.deviceInfo.snapshotLinks[i], chatId, message.message_id);
+                }
+              }, this.deviceInfo.snapshotDelayMillisecond
+            );
           })
           .catch(error=> {
             this.log('開始偵測訊息寄送失敗：' + error);
@@ -122,9 +132,7 @@ class ChuCooDoorRPI {
     }
   }
 
-  getSnapshot(chatId, messageId) {
-    let snapshotLink = `http://${this.deviceInfo.cameraIp}/web/snapshot.jpg`;
-
+  getSnapshot(snapshotLink, chatId, messageId) {
     this.getImage(snapshotLink)
       .then(res => {
         this.log('成功獲取截圖');
@@ -167,6 +175,9 @@ class ChuCooDoorRPI {
   getImage(url) {
     let options = {
       uri: url,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+      },
       jar: true,
       encoding: null
     };
