@@ -6,7 +6,7 @@ class Logger {
   }
 
   log(text) {
-    const dateText = moment().format( 'YYYY/MM/DD HH:mm:ss')
+    const dateText = Moment().format( 'YYYY/MM/DD HH:mm:ss')
     console.log(`${dateText}: ${this.groupTitle} ${text}`);
   }
 }

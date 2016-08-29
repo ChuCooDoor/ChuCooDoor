@@ -49,7 +49,7 @@ class ChuCooDoorRPI {
   }
 
   getDateText() {
-    return moment().format( 'YYYY/MM/DD HH:mm:ss')
+    return Moment().format( 'YYYY/MM/DD HH:mm:ss')
   }
 
   sendDeviceStatus(chatId, msgId) {
