@@ -49,9 +49,9 @@ class ChuCooDoorWebduino {
     } else if (status == -1) {
       text = 'GG 中';
     } else if (status == 1) {
-      text = '開門中';
+      text = `${this.deviceInfo.textForSensorOutputHigh}中`;
     } else if (status == 0) {
-      text = '關門中';
+      text = `${this.deviceInfo.textForSensorOutputLow}中`;
     }
 
     this.sendMessage(chatId, text, {reply_to_message_id: msgId})
@@ -72,8 +72,8 @@ class ChuCooDoorWebduino {
     ** `status` code list
     ** -2: initial
     ** -1: error
-    ** 0: close (same as board value)
-    ** 1: open (same as board value)
+    ** 0: sensorOutputLow; (same as board value)
+    ** 1: sensorOutputHigh (same as board value)
     */
     this.status = -2;
 
@@ -138,9 +138,9 @@ class ChuCooDoorWebduino {
       let chatId = this.deviceInfo.telegram_groupChatId;
       let text = '';
       if (boardValue === 1) {
-        text = '開門';
+        text = this.deviceInfo.textForSensorOutputHigh;
       } else if (boardValue === 0) {
-        text = '關門';
+        text = this.deviceInfo.textForSensorOutputLow;
       }
       // for initial check.
       if (this.status === -2) {

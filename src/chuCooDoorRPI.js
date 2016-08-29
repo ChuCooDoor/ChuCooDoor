@@ -39,9 +39,9 @@ class ChuCooDoorRPI {
     if (this.status == -1) {
       text = 'GG 中';
     } else if (this.status == 1) {
-      text = '關門中';
+      text = `${this.deviceInfo.textForSensorOutputHigh}中`;
     } else if (this.status == 0) {
-      text = '開門中';
+      text = `${this.deviceInfo.textForSensorOutputLow}中`;
     }
 
     return text;
@@ -99,9 +99,9 @@ class ChuCooDoorRPI {
       const dateText = this.getDateText();
 
       if (boardValue === 1) {
-        text = '關門';
+        text = this.deviceInfo.textForSensorOutputHigh;
       } else if (boardValue === 0) {
-        text = '開門';
+        text = this.deviceInfo.textForSensorOutputLow;
       }
 
       text = text.concat(` - ${dateText}`);
