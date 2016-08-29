@@ -150,21 +150,27 @@ class ChuCooDoorWebduino {
 
       // change status of lock.
       this.status = boardValue;
-      this.sendMessage(chatId, text)
-        .then(message => {
-          this.log('開始偵測訊息寄送成功');
-          setTimeout(
-            () => {
-              for (let i = 0; i < this.deviceInfo.snapshotLinks.length; i++) {
-                this.getSnapshot(this.deviceInfo.snapshotLinks[i], chatId, message.message_id);
-              }
-            }, this.deviceInfo.snapshotDelayMillisecond
-          );
-        })
-        .catch(error=> {
-          this.log('開始偵測訊息寄送失敗：' + error);
-        });
-
+      // 控制是否傳送通知訊息
+      if (
+        ( (this.status == 1) && this.deviceInfo.notifyWhenSensorOutputHigh)
+        ||
+        ( (this.status == 0) && this.deviceInfo.notifyWhenSensorOutputLow)
+      ) {
+        this.sendMessage(chatId, text)
+          .then(message => {
+            this.log('開始偵測訊息寄送成功');
+            setTimeout(
+              () => {
+                for (let i = 0; i < this.deviceInfo.snapshotLinks.length; i++) {
+                  this.getSnapshot(this.deviceInfo.snapshotLinks[i], chatId, message.message_id);
+                }
+              }, this.deviceInfo.snapshotDelayMillisecond
+            );
+          })
+          .catch(error=> {
+            this.log('開始偵測訊息寄送失敗：' + error);
+          });
+      }
       this.log(text);
 
     } else {

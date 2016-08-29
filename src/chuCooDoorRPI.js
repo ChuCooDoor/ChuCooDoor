@@ -108,8 +108,12 @@ class ChuCooDoorRPI {
 
       // change status of lock.
       this.status = boardValue;
-      // 關門不發訊息
-      if (this.status != 1) {
+      // 控制是否傳送通知訊息
+      if (
+        ( (this.status == 1) && this.deviceInfo.notifyWhenSensorOutputHigh)
+        ||
+        ( (this.status == 0) && this.deviceInfo.notifyWhenSensorOutputLow)
+      ) {
         this.sendMessage(chatId, text)
           .then(message => {
             this.log('門狀態改變訊息寄送成功');
