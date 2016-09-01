@@ -89,7 +89,7 @@ bot.sendMessage(basicInfos.telegram_devGroupChatId, '系統啟動！')
 bot.onText(/\/getId/, function (msg) {
   const chatId = msg.chat.id;
 
-  bot.sendMessage(basicInfos.telegram_devGroupChatId, chatId)
+  bot.sendMessage(chatId, chatId)
     .then(message => {
       logger.log(`回應 ID 寄送成功`);
     })
