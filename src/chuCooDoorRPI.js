@@ -119,11 +119,13 @@ class ChuCooDoorRPI {
             this.log('門狀態改變訊息寄送成功');
             for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
               const snapshot = this.deviceInfo.snapshots[i];
-              setTimeout(
-                () => {
-                  this.getSnapshot(snapshot.link, chatId, message.message_id);
-                }, snapshot.delayMillisecond
-              );
+              for (let j = 0; j < snapshot.delayMilliseconds.length; j++) {
+                setTimeout(
+                  () => {
+                    this.getSnapshot(snapshot.link, chatId, message.message_id);
+                  }, snapshot.delayMilliseconds[j]
+                );
+              }
             }
           })
           .catch(error=> {
