@@ -57,8 +57,8 @@ class ChuCooDoorWebduino {
     this.sendMessage(chatId, text, {reply_to_message_id: msgId})
       .then(message => {
         this.log('回應狀態寄送成功');
-        for (let i = 0; i < this.deviceInfo.snapshotLinks.length; i++) {
-          this.getSnapshot(this.deviceInfo.snapshotLinks[i], chatId, message.message_id);
+        for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
+          this.getSnapshot(this.deviceInfo.snapshots[i].link, chatId, message.message_id);
         }
       })
       .catch(error => {
@@ -159,13 +159,14 @@ class ChuCooDoorWebduino {
         this.sendMessage(chatId, text)
           .then(message => {
             this.log('開始偵測訊息寄送成功');
-            setTimeout(
-              () => {
-                for (let i = 0; i < this.deviceInfo.snapshotLinks.length; i++) {
-                  this.getSnapshot(this.deviceInfo.snapshotLinks[i], chatId, message.message_id);
-                }
-              }, this.deviceInfo.snapshotDelayMillisecond
-            );
+            for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
+              const snapshot = this.deviceInfo.snapshots[i];
+              setTimeout(
+                () => {
+                  this.getSnapshot(snapshot.link, chatId, message.message_id);
+                }, snapshot.delayMillisecond
+              );
+            }
           })
           .catch(error=> {
             this.log('開始偵測訊息寄送失敗：' + error);
