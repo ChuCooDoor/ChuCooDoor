@@ -48,19 +48,13 @@ class ChuCooDoorRPI {
     return text;
   }
 
-  getDateText() {
-    return Moment().format( 'YYYY/MM/DD HH:mm:ss')
-  }
-
   sendDeviceStatus(chatId, msgId) {
     this.syncBoardValue()
       .then(message => {
         this.log( 'syncBoardValue 成功: ' + JSON.stringify(message) );
         this.status = message.boardValue;
 
-        const dateText = this.getDateText();
-
-        this.sendMessage(chatId, `${this.check()} - ${dateText}`, {reply_to_message_id: msgId})
+        this.sendMessage(chatId, this.check(), {reply_to_message_id: msgId})
           .then(message => {
             this.log('回應狀態寄送成功');
             for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
@@ -96,15 +90,11 @@ class ChuCooDoorRPI {
       let chatId = this.deviceInfo.telegram_groupChatId;
       let text = '';
 
-      const dateText = this.getDateText();
-
       if (boardValue === 1) {
         text = this.deviceInfo.textForSensorOutputHigh;
       } else if (boardValue === 0) {
         text = this.deviceInfo.textForSensorOutputLow;
       }
-
-      text = text.concat(` - ${dateText}`);
 
       // change status of lock.
       this.status = boardValue;
@@ -193,7 +183,8 @@ class ChuCooDoorRPI {
   }
 
   sendMessage(chatId, text, options) {
-    text = `${this.deviceInfo.groupTitle}: ${text}`;
+    const dateText = Moment().format( 'YYYY/MM/DD HH:mm:ss');;
+    text = `${this.deviceInfo.groupTitle}: ${text} - ${dateText}`;
     return this.bot.sendMessage(chatId, text, options);
   }
 

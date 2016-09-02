@@ -1,3 +1,4 @@
+import Moment from 'moment';
 import rp from 'request-promise-native';
 import Webduino from 'webduino-js';
 import Logger from './logger.js';
@@ -234,7 +235,8 @@ class ChuCooDoorWebduino {
   }
 
   sendMessage(chatId, text, options) {
-    text = `${this.deviceInfo.groupTitle}: ${text}`;
+    const dateText = Moment().format( 'YYYY/MM/DD HH:mm:ss');;
+    text = `${this.deviceInfo.groupTitle}: ${text} - ${dateText}`;
     return this.bot.sendMessage(chatId, text, options);
   }
 
