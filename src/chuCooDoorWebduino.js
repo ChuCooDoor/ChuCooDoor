@@ -124,7 +124,7 @@ class ChuCooDoorWebduino {
     if (this.timer) {
       clearTimeout(this.timer);
     }
-    this.timer = setTimeout( () => {this.check();}, 2000);
+    this.timer = setTimeout( () => {this.check();}, this.deviceInfo.sensorDelayTime + 500);
   }
 
   check() {
