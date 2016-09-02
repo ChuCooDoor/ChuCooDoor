@@ -1,6 +1,5 @@
 import Moment from 'moment';
 import rp from 'request-promise-native';
-import rpio from 'rpio';
 import Logger from './logger.js';
 
 class ChuCooDoorRPI {
