@@ -145,21 +145,19 @@ class ChuCooDoorWebduino {
       }
       // for initial check.
       if (this.status === -2) {
-        text = '開始監控: ' + text.concat('中');
+        text = '開始監控，' + text.concat('中');
         chatId = this.devGroupChatId;
       }
 
-      // change status of lock.
-      this.status = boardValue;
       // 控制是否傳送通知訊息
       if (
-        ( (this.status == 1) && this.deviceInfo.notifyWhenSensorOutputHigh)
+        ( (boardValue == 1) && this.deviceInfo.notifyWhenSensorOutputHigh)
         ||
-        ( (this.status == 0) && this.deviceInfo.notifyWhenSensorOutputLow)
+        ( (boardValue == 0) && this.deviceInfo.notifyWhenSensorOutputLow)
       ) {
         this.sendMessage(chatId, text)
           .then(message => {
-            this.log('開始偵測訊息寄送成功');
+            this.log('狀況改變訊息寄送成功');
             for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
               const snapshot = this.deviceInfo.snapshots[i];
               for (let j = 0; j < snapshot.delayMilliseconds.length; j++) {
@@ -172,9 +170,23 @@ class ChuCooDoorWebduino {
             }
           })
           .catch(error=> {
-            this.log('開始偵測訊息寄送失敗：' + error);
+            this.log(`狀況改變訊息寄送失敗： ${error}`);
+          });
+      } else if (this.status == -2) {
+        this.sendMessage(chatId, text)
+          .then(message => {
+            this.log('開始偵測訊息寄送成功');
+            for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
+              const snapshot = this.deviceInfo.snapshots[i];
+              this.getSnapshot(snapshot.link, chatId, message.message_id);
+            }
+          })
+          .catch(error=> {
+            this.log(`開始偵測訊息寄送失敗： ${error}`);
           });
       }
+      // change status of lock.
+      this.status = boardValue;
       this.log(text);
 
     } else {
