@@ -58,13 +58,14 @@ class ChuCooDoorRPI {
           .then(message => {
             this.log('回應狀態寄送成功');
             for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
-              let link = '';
               if (this.deviceInfo.snapshots[i].type === 'dahua') {
-                link = this.getSnapshotLinkByDahua(this.deviceInfo.snapshots[i].dvrInfo, this.deviceInfo.snapshots[i].link);
+                const dvrInfo = this.deviceInfo.snapshots[i].dvrInfo;
+                const link = this.deviceInfo.snapshots[i].link;
+                this.getSnapshotLinkByDahua(dvrInfo, link, chatId, message.message_id);
               } else {
-                link = this.deviceInfo.snapshots[i].link
+                const link = this.deviceInfo.snapshots[i].link;
+                this.getSnapshot(link, chatId, message.message_id);
               }
-              this.getSnapshot(link, chatId, message.message_id);
             }
           })
           .catch(error => {
@@ -78,13 +79,14 @@ class ChuCooDoorRPI {
           .then(message => {
             this.log('回應狀態寄送成功');
             for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
-              let link = '';
               if (this.deviceInfo.snapshots[i].type === 'dahua') {
-                link = this.getSnapshotLinkByDahua(this.deviceInfo.snapshots[i].dvrInfo, this.deviceInfo.snapshots[i].link);
+                const dvrInfo = this.deviceInfo.snapshots[i].dvrInfo;
+                const link = this.deviceInfo.snapshots[i].link;
+                this.getSnapshotLinkByDahua(dvrInfo, link, chatId, message.message_id);
               } else {
-                link = this.deviceInfo.snapshots[i].link
+                const link = this.deviceInfo.snapshots[i].link;
+                this.getSnapshot(link, chatId, message.message_id);
               }
-              this.getSnapshot(link, chatId, message.message_id);
             }
           })
           .catch(error => {
@@ -121,16 +123,16 @@ class ChuCooDoorRPI {
             this.log('門狀態改變訊息寄送成功');
             for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
 
-              let snapshot = this.deviceInfo.snapshots[i]
-
-              if (snapshots.type === 'dahua') {
-                snapshot.link = this.getSnapshotLinkByDahua(snapshots.dvrInfo,snapshots.link);
-              }
+              let snapshot = this.deviceInfo.snapshots[i];
 
               for (let j = 0; j < snapshot.delayMilliseconds.length; j++) {
                 setTimeout(
                   () => {
-                    this.getSnapshot(snapshot.link, chatId, message.message_id);
+                    if (snapshot.type === 'dahua') {
+                      this.getSnapshotLinkByDahua(snapshot.dvrInfo, snapshot.link, chatId, message.message_id);
+                    } else {
+                      this.getSnapshot(snapshot.link, chatId, message.message_id);
+                    }
                   }, snapshot.delayMilliseconds[j]
                 );
               }
@@ -147,15 +149,16 @@ class ChuCooDoorRPI {
     }
   }
 
-  getSnapshotLinkByDahua(dvrInfo, cameraId) {
-    dahua = new Dahua(dvrInfo.ip, dvrInfo.username, dvrInfo.password, cameraId)
+  getSnapshotLinkByDahua(dvrInfo, cameraId, chatId, messageId) {
+    let dahua = new Dahua(dvrInfo.baseUrl, dvrInfo.username, dvrInfo.password, cameraId)
     dahua.getSessionId()
       .then(res => {
-        this.log(`取得 sessionId 成功：${res}`);
+        this.log(`取得 sessionId 成功：${res.session}`);
         dahua.login(res)
           .then(res => {
-            this.log(`登入成功：${res}`);
-            return dahua.getSnapshotLink(res);
+            this.log(`登入成功：${res.session}`);
+            const link = dahua.getSnapshotLink(res);
+            this.getSnapshot(link, chatId, messageId);
           })
           .catch(error => {
             this.log(`登入失敗 ${error}`);
@@ -203,7 +206,6 @@ class ChuCooDoorRPI {
               this.log('無法取得截圖訊息寄送失敗：' + error);
             });
         });
-
   }
 
   getImage(url) {
