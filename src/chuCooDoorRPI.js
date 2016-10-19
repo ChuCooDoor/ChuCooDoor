@@ -10,6 +10,7 @@ class ChuCooDoorRPI {
     this.status = -1;
     this.devGroupChatId = devGroupChatId;
     this.logger = new Logger(this.deviceInfo.groupTitle);
+    this.dahuaSession = '';
   }
 
   getChatId() {
@@ -151,22 +152,32 @@ class ChuCooDoorRPI {
 
   getSnapshotLinkByDahua(dvrInfo, cameraId, chatId, messageId) {
     let dahua = new Dahua(dvrInfo.baseUrl, dvrInfo.username, dvrInfo.password, cameraId)
-    dahua.getSessionId()
+
+    let link = dahua.getSnapshotLink(this.dahuaSession);
+    this.getImage(link)
       .then(res => {
-        this.log(`取得 sessionId 成功：${res.session}`);
-        dahua.login(res)
-          .then(res => {
-            this.log(`登入成功：${res.session}`);
-            const link = dahua.getSnapshotLink(res);
-            this.getSnapshot(link, chatId, messageId);
-          })
-          .catch(error => {
-            this.log(`登入失敗 ${error}`);
-          });
+        this.log(`確認截圖連結正常：${link}`);
+        this.getSnapshot(link, chatId, messageId);
       })
       .catch(error => {
-        this.log(`取得 sessionId 失敗 ${error}`);
-      });
+        this.log(`截圖 session 失效：${error}`);
+        dahua.getSessionId()
+          .then(res => {
+            this.log(`取得 sessionId 成功：${res.session}`);
+            dahua.login(res)
+              .then(res => {
+                this.dahuaSession = res.session;
+                this.log(`登入成功：${this.dahuaSession}`);
+                this.getSnapshotLinkByDahua(dvrInfo, cameraId, chatId, messageId);
+              })
+              .catch(error => {
+                this.log(`登入失敗 ${error}`);
+              });
+          })
+          .catch(error => {
+            this.log(`取得 sessionId 失敗 ${error}`);
+          });
+      })
   }
 
   getSnapshot(snapshotLink, chatId, messageId) {

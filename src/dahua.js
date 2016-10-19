@@ -48,8 +48,8 @@ class Dahua {
     return rp(options);
   }
 
-  getSnapshotLink(res) {
-    return `${this.baseUrl}/cgi-bin/Snapshot.cgi?channel=${this.cameraId}&sessionId=${res.session}`;
+  getSnapshotLink(session) {
+    return `${this.baseUrl}/cgi-bin/Snapshot.cgi?channel=${this.cameraId}&sessionId=${session}`;
   }
 }
 
