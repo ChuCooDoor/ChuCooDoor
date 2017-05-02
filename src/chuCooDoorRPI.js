@@ -11,6 +11,15 @@ class ChuCooDoorRPI {
     this.devGroupChatId = devGroupChatId;
     this.logger = new Logger(this.deviceInfo.groupTitle);
     this.dahuaSession = '';
+    this.initDvr();
+  }
+
+  initDvr() {
+    for (let snapshot of this.deviceInfo.snapshots) {
+      if (snapshot.type === 'dahua') {
+        snapshot.instane = new Dahua(snapshot.dvrInfo.baseUrl, snapshot.dvrInfo.username, snapshot.dvrInfo.password, snapshot.link);
+      }
+    }
   }
 
   getChatId() {
@@ -58,13 +67,12 @@ class ChuCooDoorRPI {
         this.sendMessage(chatId, this.check(), {reply_to_message_id: msgId})
           .then(message => {
             this.log('回應狀態寄送成功');
-            for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
-              if (this.deviceInfo.snapshots[i].type === 'dahua') {
-                const dvrInfo = this.deviceInfo.snapshots[i].dvrInfo;
-                const link = this.deviceInfo.snapshots[i].link;
-                this.getSnapshotLinkByDahua(dvrInfo, link, chatId, message.message_id);
+            for (let snapshot of this.deviceInfo.snapshots) {
+              if (snapshot.type === 'dahua') {
+                const instane = snapshot.instane;
+                this.getSnapshotLinkByDahua(instane, chatId, message.message_id);
               } else {
-                const link = this.deviceInfo.snapshots[i].link;
+                const link = snapshot.link;
                 this.getSnapshot(link, chatId, message.message_id);
               }
             }
@@ -79,13 +87,12 @@ class ChuCooDoorRPI {
         this.sendMessage(chatId, this.check(), {reply_to_message_id: msgId})
           .then(message => {
             this.log('回應狀態寄送成功');
-            for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
-              if (this.deviceInfo.snapshots[i].type === 'dahua') {
-                const dvrInfo = this.deviceInfo.snapshots[i].dvrInfo;
-                const link = this.deviceInfo.snapshots[i].link;
-                this.getSnapshotLinkByDahua(dvrInfo, link, chatId, message.message_id);
+            for (let snapshot of this.deviceInfo.snapshots) {
+              if (snapshot.type === 'dahua') {
+                const instane = snapshot.instane;
+                this.getSnapshotLinkByDahua(instane, chatId, message.message_id);
               } else {
-                const link = this.deviceInfo.snapshots[i].link;
+                const link = snapshot.link;
                 this.getSnapshot(link, chatId, message.message_id);
               }
             }
@@ -122,15 +129,12 @@ class ChuCooDoorRPI {
         this.sendMessage(chatId, text)
           .then(message => {
             this.log('門狀態改變訊息寄送成功');
-            for (let i = 0; i < this.deviceInfo.snapshots.length; i++) {
-
-              let snapshot = this.deviceInfo.snapshots[i];
-
+            for (let snapshot of this.deviceInfo.snapshots) {
               for (let j = 0; j < snapshot.delayMilliseconds.length; j++) {
                 setTimeout(
                   () => {
                     if (snapshot.type === 'dahua') {
-                      this.getSnapshotLinkByDahua(snapshot.dvrInfo, snapshot.link, chatId, message.message_id);
+                      this.getSnapshotLinkByDahua(snapshot.instane, chatId, message.message_id);
                     } else {
                       this.getSnapshot(snapshot.link, chatId, message.message_id);
                     }
@@ -150,10 +154,10 @@ class ChuCooDoorRPI {
     }
   }
 
-  getSnapshotLinkByDahua(dvrInfo, cameraId, chatId, messageId) {
-    let dahua = new Dahua(dvrInfo.baseUrl, dvrInfo.username, dvrInfo.password, cameraId)
+  getSnapshotLinkByDahua(instane, chatId, messageId) {
+    // let dahua = new Dahua(dvrInfo.baseUrl, dvrInfo.username, dvrInfo.password, cameraId)
 
-    let link = dahua.getSnapshotLink(this.dahuaSession);
+    let link = instane.getSnapshotLink(this.dahuaSession);
     this.getImage(link)
       .then(res => {
         this.log(`確認截圖連結正常：${link}`);
@@ -161,14 +165,14 @@ class ChuCooDoorRPI {
       })
       .catch(error => {
         this.log(`截圖 session 失效：${error}`);
-        dahua.getSessionId()
+        instane.getSessionId()
           .then(res => {
             this.log(`取得 sessionId 成功：${res.session}`);
-            dahua.login(res)
+            instane.login(res)
               .then(res => {
                 this.dahuaSession = res.session;
                 this.log(`登入成功：${this.dahuaSession}`);
-                this.getSnapshotLinkByDahua(dvrInfo, cameraId, chatId, messageId);
+                this.getSnapshotLinkByDahua(instane, chatId, messageId);
               })
               .catch(error => {
                 this.log(`登入失敗 ${error}`);
